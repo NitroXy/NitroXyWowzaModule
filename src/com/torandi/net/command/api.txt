@@ -1,0 +1,13 @@
+{
+	'function': 'functionName',
+	'args': [
+		'arg1',
+		'arg2'
+	]
+}
+
+return:
+{
+	status: 'success' (or 'error'),
+	data: { returned object (or error message) }
+}
