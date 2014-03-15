@@ -8,16 +8,17 @@ import com.wowza.wms.amf.*;
 import com.wowza.wms.client.*;
 import com.wowza.wms.module.*;
 import com.wowza.wms.request.*;
+import com.wowza.wms.server.LicensingException;
 import com.wowza.wms.stream.*;
 
 public class NitroXyModule extends ModuleBase implements Logger {
 	private HashMap<IApplicationInstance, StreamManager> managers = new HashMap<IApplicationInstance, StreamManager>();
 	
-	public void onAppStart(IApplicationInstance appInstance) {
+	public void onAppStart(IApplicationInstance appInstance) throws LicensingException {
 
 		StreamManager mngr = new StreamManager(this, appInstance);
 		managers.put(appInstance, mngr);
-		appInstance.setStreamNameAliasProvider(mngr);
+		//appInstance.setStreamNameAliasProvider(mngr);
 	}
 
 	public void onAppStop(IApplicationInstance appInstance) {
