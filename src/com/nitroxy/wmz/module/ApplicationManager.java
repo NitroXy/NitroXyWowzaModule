@@ -91,4 +91,13 @@ public class ApplicationManager {
 	public String currentPreview() {
 		return config.settings.StreamSwitcher_previewTarget;
 	}
+	
+	@Exposed
+	public boolean republish() {
+		if(streamSwitcher != null) {
+			streamSwitcher.republish();
+			return true;
+		} else
+			return false;
+	}
 }

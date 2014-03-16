@@ -38,6 +38,7 @@ public class NitroXyModule extends ModuleBase implements Logger {
 	}
 
 	public void onStreamCreate(IMediaStream stream) {
+
 	}
 
 	public void onStreamDestroy(IMediaStream stream) {
@@ -50,5 +51,4 @@ public class NitroXyModule extends ModuleBase implements Logger {
 	public void error(String msg) {
 		getLogger().error("NitroXy: "+msg);
 	}
-
 }
