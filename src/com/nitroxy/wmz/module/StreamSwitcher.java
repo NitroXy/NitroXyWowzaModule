@@ -25,7 +25,6 @@ public class StreamSwitcher {
 		liveStream = Stream.createInstance(appInstance, config.settings.StreamSwitcher_liveStream);
 
 		previewStream = Stream.createInstance(appInstance, config.settings.StreamSwitcher_previewStream);
-		previewStream.setRepeat(true);
 		
 		if(config.settings.StreamSwitcher_previewStream != null && !config.settings.StreamSwitcher_previewStream.equals("")) {
 			playStream(liveStream, config.settings.StreamSwitcher_previewStream);
@@ -35,7 +34,7 @@ public class StreamSwitcher {
 		main.info("Application: "+appInstance.getApplication().getName() + ". Live: "+config.settings.StreamSwitcher_liveStream + ". Preview:" + config.settings.StreamSwitcher_previewStream);
 	}
 	
-	public void startPushPublish(IApplicationInstance appInstance) {
+	public void startPushPublish() {
 		try {
 			publisher = new PushPublishRTMP();
 			publisher.setAppInstance(appInstance);
@@ -78,7 +77,7 @@ public class StreamSwitcher {
 		main.info("Published stream to live ("+config.settings.StreamSwitcher_liveTarget+")");
 		config.save();
 		if(publisher == null) {
-			startPushPublish(appInstance);
+			startPushPublish();
 		}
 	}
 	
@@ -89,7 +88,18 @@ public class StreamSwitcher {
 		playStream(liveStream, config.settings.StreamSwitcher_liveTarget);
 		playStream(previewStream, config.settings.StreamSwitcher_previewTarget);
 		if(publisher == null) {
-			startPushPublish(appInstance);
+			startPushPublish();
+		} else {
+			publisher.disconnect();
+			publisher = null;
+			startPushPublish();
+		}
+	}
+	
+	public void stopPushPublish() {
+		if(publisher != null) {
+			publisher.disconnect();
+			publisher = null;
 		}
 	}
 	

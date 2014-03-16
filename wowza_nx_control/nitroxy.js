@@ -43,6 +43,13 @@ $(function() {
 		return false;
 	})
 
+	$("#republish").click(function() {
+		if(confirm("Are you sure you want to republish?")) {
+			republish();
+		}
+		return false;
+	})
+
 	$("#refresh_streams").click(function() {
 		updateStreamList();
 		return false;
@@ -67,6 +74,13 @@ function switchStream(stream) {
 
 function publish() {
 	if(!remoteCall("publishStream")) {
+		alert("Warning, SwitchStream is not enabled on the server");
+	}
+	updateStreamInfo();
+}
+
+function republish() {
+	if(!remoteCall("republish")) {
 		alert("Warning, SwitchStream is not enabled on the server");
 	}
 	updateStreamInfo();

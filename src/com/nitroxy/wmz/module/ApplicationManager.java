@@ -100,4 +100,16 @@ public class ApplicationManager {
 		} else
 			return false;
 	}
+	
+	@Exposed
+	public void stopPushPublish() {
+		if(streamSwitcher != null)
+			streamSwitcher.stopPushPublish();
+	}
+	
+	@Exposed
+	public void startPushPublish() {
+		if(streamSwitcher != null)
+			streamSwitcher.stopPushPublish();
+	}
 }
