@@ -94,6 +94,7 @@ public class JSONCommand<T> implements XStreamListener {
 			} catch (Exception e) {
 				return_obj.put("status", "error");
 				return_obj.put("data", "Exception: "+e);
+				e.printStackTrace();
 			}
 		}
 		send_object(sck, return_obj);

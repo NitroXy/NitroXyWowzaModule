@@ -26,18 +26,25 @@ function remoteCall(function_name /* args ...*/) {
 
 $(function() {
 	updateStreamInfo();
+	updateStreamList();
 
 	$("#do_change").click(function() {
-		if($("#preview_stream").val() == "") {
-			alert("Can't change to empty stream");
-			return false;
-		}
 		switchStream($("#preview_stream").val());
+		return false;
+	})
+
+	$("#do_change_from_list").click(function() {
+		switchStream($("#preview_stream_list").val());
 		return false;
 	})
 
 	$("#publish").click(function() {
 		publish();
+		return false;
+	})
+
+	$("#refresh_streams").click(function() {
+		updateStreamList();
 		return false;
 	})
 })
@@ -48,6 +55,10 @@ function updateStreamInfo() {
 }
 
 function switchStream(stream) {
+	if(!stream || !$.trim(stream)) {
+		alert("Can't change to empty stream");
+		return false;
+	}
 	if(!remoteCall("switchStream", stream)) {
 		alert("Warning, SwitchStream is not enabled on the server");
 	}
@@ -59,4 +70,16 @@ function publish() {
 		alert("Warning, SwitchStream is not enabled on the server");
 	}
 	updateStreamInfo();
+}
+
+function updateStreamList() {
+	var streams = remoteCall('getStreams');
+
+	var $list = $("#preview_stream_list")
+
+	$list.html("");
+
+	$.each(streams, function(idx, stream) {
+		$list.append("<option>"+stream+"</option>")
+	})
 }

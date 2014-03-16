@@ -51,9 +51,20 @@
 				</script>
 				<div id="preview_data"></div>
 				<div>
-					<form class='form-inline'>
-						<label for='stream' style='margin-right: 5px'>Change stream: </label><input type='text' id='preview_stream' class='form-control' style='width: 150px'></input>
+					<h4>Change preview stream</h4>
+
+					<form class='form-inline' style='margin-bottom: 10px'>
+						<select id='preview_stream_list' class='form-control' style='width: 150px'></select>
+						<input type='submit' value='Change to selected' id='do_change_from_list' class='btn btn-primary'/>
+					</form>
+
+					<form class='form-inline' style='margin-bottom: 10px'>
+						<input type='text' id='preview_stream' class='form-control' style='width: 150px'></input>
 						<input type='submit' value='Change' id='do_change' class='btn btn-primary'/>
+					</form>
+
+					<form class='form-inline' style='margin-bottom: 10px'>
+						<input type='submit' value='Refresh stream list' id='refresh_streams' class='btn btn-default'/>
 					</form>
 				</div>
 			</div>
