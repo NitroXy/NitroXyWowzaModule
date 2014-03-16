@@ -3,6 +3,7 @@ package com.nitroxy.wmz.module;
 import java.util.HashMap;
 
 import com.torandi.net.Logger;
+import com.torandi.net.command.JSONCommand;
 import com.wowza.wms.application.*;
 import com.wowza.wms.amf.*;
 import com.wowza.wms.client.*;
@@ -12,11 +13,10 @@ import com.wowza.wms.server.LicensingException;
 import com.wowza.wms.stream.*;
 
 public class NitroXyModule extends ModuleBase implements Logger {
-	private HashMap<IApplicationInstance, StreamManager> managers = new HashMap<IApplicationInstance, StreamManager>();
+	private HashMap<IApplicationInstance, ApplicationManager> managers = new HashMap<IApplicationInstance, ApplicationManager>();
 	
 	public void onAppStart(IApplicationInstance appInstance) throws LicensingException {
-
-		StreamManager mngr = new StreamManager(this, appInstance);
+		ApplicationManager mngr = new ApplicationManager(this, appInstance);
 		managers.put(appInstance, mngr);
 	}
 

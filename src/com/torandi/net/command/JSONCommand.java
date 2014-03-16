@@ -42,7 +42,7 @@ public class JSONCommand<T> implements XStreamListener {
 			logger.info("JSONCommand listening on port "+port+" for class "+object.getClass().getName());
 		} catch (IOException e) {
 			e.printStackTrace();
-			logger.error("Exception: " + e.getMessage());
+			logger.error("Exception: " + e);
 		}
 	} 
 	
@@ -93,14 +93,15 @@ public class JSONCommand<T> implements XStreamListener {
 				}
 			} catch (Exception e) {
 				return_obj.put("status", "error");
-				return_obj.put("data", "Exception: "+e.getMessage());
+				return_obj.put("data", "Exception: "+e);
 			}
 		}
 		send_object(sck, return_obj);
 		return;
 	}
 	
-	public void shutdown() {
+	@Override
+	protected void finalize() throws Throwable {
 		logger.info("Shuting down JSON command interface");
 		socket.stopListen();
 		for(XSocket client : clients) {
@@ -109,6 +110,7 @@ public class JSONCommand<T> implements XStreamListener {
 			} catch (IOException e) {
 			}
 		}
+		super.finalize();
 	}
 
 	@Override

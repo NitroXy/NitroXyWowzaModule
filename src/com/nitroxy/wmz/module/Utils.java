@@ -2,6 +2,7 @@ package com.nitroxy.wmz.module;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
 public class Utils {
@@ -16,8 +17,20 @@ public class Utils {
 			content = new String(chars);
 			reader.close();
 		} catch (IOException e) {
+			e.printStackTrace();
 			return null;
 		}
 		return content;
+	}
+	
+	public static void writeFile(String filename, String data) {
+		File file = new File(filename);
+		try {
+			FileWriter writer = new FileWriter(file);
+			writer.write(data);
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
