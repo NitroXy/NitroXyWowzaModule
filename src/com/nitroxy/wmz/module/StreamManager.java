@@ -7,10 +7,9 @@ import com.wowza.wms.application.WMSProperties;
 import com.wowza.wms.bootstrap.Bootstrap;
 import com.wowza.wms.pushpublish.protocol.rtmp.PushPublishRTMP;
 import com.wowza.wms.server.LicensingException;
-import com.wowza.wms.stream.IMediaStreamNameAliasProvider;
 import com.wowza.wms.stream.publish.Stream;
 
-public class StreamManager implements IMediaStreamNameAliasProvider {
+public class StreamManager {
 
 	private Config config = null;
 	private String liveStreamName = null;
@@ -29,7 +28,7 @@ public class StreamManager implements IMediaStreamNameAliasProvider {
 	
 	private NitroXyModule main;
 	
-	private String liveStreamTarget = "wowza_test.stream";
+	private String liveStreamTarget = "preroll";
 	private String previewStreamTarget = null;
 	
 	private String contentPath;
@@ -49,9 +48,9 @@ public class StreamManager implements IMediaStreamNameAliasProvider {
 		bindAddress = props.getPropertyStr("NitroXyBindAddress", "localhost");
 		bindPort = props.getPropertyInt("NitroXyBindPort", 1337);
 		
-		//fileStream = Stream.createInstance(appInstance, "preroll");
-		//fileStream.play("mp4:af.mov",0, -1, true);
-		//fileStream.setRepeat(true);
+		fileStream = Stream.createInstance(appInstance, "preroll");
+		fileStream.play("mp4:af.mov",0, -1, true);
+		fileStream.setRepeat(true);
 	
 		liveStreamName = props.getPropertyStr("NitroXyLiveStream", "live");
 		previewStreamName = props.getPropertyStr("NitroXyPreviewStream", "preview");
@@ -96,35 +95,11 @@ public class StreamManager implements IMediaStreamNameAliasProvider {
 		command.shutdown();
 		super.finalize();
 	}
-
-	public String resolveStreamName(String name) {
-		main.info("Stream request: "+name);
-		if(name.equalsIgnoreCase(liveStreamName)) {
-			main.info("Is live stream, redirecting to "+liveStreamTarget);
-			return liveStreamTarget;
-		} else {
-			return name;
-		}
-	}
-
-	public String resolvePlayAlias(IApplicationInstance appInstance, String name) {
-		return resolveStreamName(name);
-	}
-
-	public String resolveStreamAlias(IApplicationInstance appInstance,
-			String name) {
-		if(name.endsWith(".stream")) {
-			return Utils.readFile(contentPath + name);
-		} else {
-			return name;
-		}
-	}
 	
 	@Exposed
 	public void switchStream(String stream) {
 		liveStreamTarget = stream;
 		liveStream.play(stream, -2, -1, true);
-		//publisher.setSrcStreamName(stream);
 		main.info("Switched stream to "+stream);
 	}
 }

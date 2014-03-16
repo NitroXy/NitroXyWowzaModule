@@ -18,7 +18,6 @@ public class NitroXyModule extends ModuleBase implements Logger {
 
 		StreamManager mngr = new StreamManager(this, appInstance);
 		managers.put(appInstance, mngr);
-		//appInstance.setStreamNameAliasProvider(mngr);
 	}
 
 	public void onAppStop(IApplicationInstance appInstance) {
