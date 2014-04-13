@@ -62,7 +62,7 @@ public class ApplicationManager {
 		}
 		
 		/* list content */
-		File contentDir = new File(Bootstrap.getServerHome(Bootstrap.CONFIGHOME) + "/content");
+		File contentDir = new File(appInstance.getStreamStorageDir());
 		for(final File fileEntry : contentDir.listFiles()) {
 			if(!fileEntry.isDirectory()) {
 				String ext = Utils.fileExtension(fileEntry.getName());

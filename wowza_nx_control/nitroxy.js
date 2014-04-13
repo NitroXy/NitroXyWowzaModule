@@ -3,7 +3,7 @@ var previewStream = "preview";
 var liveStream = "nitroxy";
 
 function remoteCall(function_name /* args ...*/) {
-	var args = Array.slice(arguments, 1)
+	var args = jQuery.makeArray(arguments).slice(1)
 
 	var sjax = new XMLHttpRequest();
 	sjax.open("POST", "backend.php", false);
