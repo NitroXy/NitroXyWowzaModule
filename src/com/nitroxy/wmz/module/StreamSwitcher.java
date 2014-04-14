@@ -4,6 +4,7 @@ import com.wowza.wms.application.IApplicationInstance;
 import com.wowza.wms.pushpublish.protocol.rtmp.PushPublishRTMP;
 import com.wowza.wms.server.LicensingException;
 import com.wowza.wms.stream.IMediaStream;
+import com.wowza.wms.stream.IMediaStreamActionNotify;
 import com.wowza.wms.stream.publish.Stream;
 
 public class StreamSwitcher {
@@ -13,9 +14,13 @@ public class StreamSwitcher {
 	private PushPublishRTMP publisher = null;
 	
 	private NitroXyModule main;
+
+	private String realPreviewStream = null;
+	private String realLiveStream = null;
 	
 	private Config config;
 	private IApplicationInstance appInstance;
+	private IMediaStreamActionNotify streamListener = new StreamListener();
 	
 	public StreamSwitcher(NitroXyModule main, IApplicationInstance appInstance, Config config) {
 		this.main = main;
@@ -27,7 +32,7 @@ public class StreamSwitcher {
 		previewStream = Stream.createInstance(appInstance, config.settings.StreamSwitcher_previewStream);
 		
 		if(config.settings.StreamSwitcher_previewStream != null && !config.settings.StreamSwitcher_previewStream.equals("")) {
-			playStream(liveStream, config.settings.StreamSwitcher_previewStream);
+			playStream(liveStream, config.settings.StreamSwitcher_previewTarget);
 			main.info("Started "+config.settings.StreamSwitcher_previewTarget + " on preview stream");
 		}
 		
@@ -104,6 +109,14 @@ public class StreamSwitcher {
 	}
 	
 	private void playStream(Stream on, String stream) {
+		if(on == liveStream) {
+			realLiveStream = null;
+		} else if(on == previewStream) {
+			realPreviewStream = null;
+		} else {
+			main.info("WHAT IS THIS CRAP?");
+		}
+		
 		if(stream.matches(".+:.+")) { // Detect file: "{type}:{filename}"
 			on.play(stream, 0, -1, true);
 			on.setRepeat(true);
@@ -111,5 +124,71 @@ public class StreamSwitcher {
 			on.play(stream, -2, -1, true);
 			on.setRepeat(false);
 		}
+	}
+	
+	private void onPublish(String streamName) {
+		main.info("onPublish("+streamName+")");
+		if(realLiveStream != null && streamName.trim().equalsIgnoreCase(realLiveStream)) {
+			main.info("Live stream "+streamName+" is up again, switching to it.");
+			playStream(liveStream, streamName);
+		}
+		
+		if(realPreviewStream != null && streamName.trim().equalsIgnoreCase(realPreviewStream)) {
+			main.info("Preview stream "+streamName+" is up again, switching to it.");
+			playStream(previewStream, streamName);
+		}
+	}
+	
+	private void onUnPublish(String streamName) {
+		main.info("onUnPublish("+streamName+")");
+		String backupStream = config.settings.StreamSwitcher_fallbackStream;
+		if(backupStream != null && !backupStream.equalsIgnoreCase(streamName)) {
+			if(streamName.trim().equalsIgnoreCase(config.settings.StreamSwitcher_liveTarget)) {
+				main.info("Live stream " + streamName + " went down. Switching to backup "+backupStream);
+				playStream(liveStream, backupStream);
+				realLiveStream = streamName;
+			}
+			
+			if(streamName.trim().equalsIgnoreCase(config.settings.StreamSwitcher_previewTarget)) {
+				main.info("Preview stream " + streamName + " went down. Switching to backup "+backupStream);
+				playStream(previewStream, backupStream);
+				realPreviewStream = streamName;
+			}
+		}
+	}
+	
+	public void onStreamCreate(IMediaStream stream) {
+		stream.addClientListener(streamListener);
+	}
+	
+	private class StreamListener implements IMediaStreamActionNotify {
+
+		@Override
+		public void onPublish(IMediaStream stream, String streamName,
+				boolean isRecord, boolean isAppend) {
+			StreamSwitcher.this.onPublish(streamName);
+		}
+
+		@Override
+		public void onUnPublish(IMediaStream stream, String streamName,
+				boolean isRecord, boolean isAppend) {
+			StreamSwitcher.this.onUnPublish(streamName);
+		}
+		
+		@Override
+		public void onPause(IMediaStream stream, boolean isPause,
+				double location) { }
+
+		@Override
+		public void onPlay(IMediaStream stream, String streamName,
+				double playStart, double playLen, int playReset) { }
+
+
+		@Override
+		public void onSeek(IMediaStream stream, double location) { }
+
+		@Override
+		public void onStop(IMediaStream stream) { }
+		
 	}
 }

@@ -36,6 +36,8 @@ public class Config {
 		public String StreamSwitcher_liveTarget = null;
 		@Optional
 		public String StreamSwitcher_previewTarget = null;
+		@Optional
+		public String StreamSwitcher_fallbackStream = null;
 
 		public String pushPublish_Host = null;
 		@Optional

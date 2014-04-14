@@ -27,8 +27,9 @@ public class ApplicationManager {
 			}
 			command = new JSONCommand<ApplicationManager>(main, this, config.settings.Control_Address, config.settings.Control_Port);
 		}
-		
 	}
+	
+	
 	
 	public boolean enabled() {
 		return config.exists();
@@ -82,6 +83,10 @@ public class ApplicationManager {
 		return streams;
 	}
 	
+	public void onStreamCreate(IMediaStream stream) {
+		if(streamSwitcher != null) streamSwitcher.onStreamCreate(stream);
+	}
+	
 	@Exposed
 	public String currentLive() {
 		return config.settings.StreamSwitcher_liveTarget;
@@ -90,6 +95,17 @@ public class ApplicationManager {
 	@Exposed
 	public String currentPreview() {
 		return config.settings.StreamSwitcher_previewTarget;
+	}
+	
+	@Exposed
+	public void setFallback(String fallbackStream) {
+		config.settings.StreamSwitcher_fallbackStream = fallbackStream;
+		config.save();
+	}
+	
+	@Exposed
+	public String currentFallback() {
+		return config.settings.StreamSwitcher_fallbackStream;
 	}
 	
 	@Exposed

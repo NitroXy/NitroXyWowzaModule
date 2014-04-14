@@ -54,11 +54,17 @@ $(function() {
 		updateStreamList();
 		return false;
 	})
+
+	$("#do_fallback_change").click(function() {
+		setFallbackStream($("#fallback_stream_list").val());
+		return false;
+	})
 })
 
 function updateStreamInfo() {
 	$("#live_data").html("Current stream: " + remoteCall("currentLive"));
 	$("#preview_data").html("Current stream: " + remoteCall("currentPreview"));
+	$("#fallback_stream").html("Current fallback: " + remoteCall("currentFallback"));
 }
 
 function switchStream(stream) {
@@ -86,14 +92,26 @@ function republish() {
 	updateStreamInfo();
 }
 
+function setFallbackStream(stream) {
+	if(!stream || !$.trim(stream)) {
+		alert("Can't change to empty stream");
+		return false;
+	}
+	remoteCall("setFallback", stream);
+	updateStreamInfo();
+}
+
 function updateStreamList() {
 	var streams = remoteCall('getStreams');
 
 	var $list = $("#preview_stream_list")
+	var $list2 = $("#fallback_stream_list")
 
 	$list.html("");
+	$list2.html("");
 
 	$.each(streams, function(idx, stream) {
 		$list.append("<option>"+stream+"</option>")
+		$list2.append("<option>"+stream+"</option>")
 	})
 }

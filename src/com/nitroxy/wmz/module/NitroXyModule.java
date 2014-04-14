@@ -38,7 +38,9 @@ public class NitroXyModule extends ModuleBase implements Logger {
 	}
 
 	public void onStreamCreate(IMediaStream stream) {
-
+		for(ApplicationManager mngr : managers.values()) {
+			mngr.onStreamCreate(stream);
+		}
 	}
 
 	public void onStreamDestroy(IMediaStream stream) {
