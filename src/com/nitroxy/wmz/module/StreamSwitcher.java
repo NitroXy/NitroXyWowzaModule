@@ -108,6 +108,10 @@ public class StreamSwitcher {
 		}
 	}
 	
+	public boolean isPublished(){
+		return publisher != null;
+	}
+	
 	private void playStream(Stream on, String stream) {
 		if(on == liveStream) {
 			realLiveStream = null;

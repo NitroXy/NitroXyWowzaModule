@@ -2,6 +2,8 @@ package com.nitroxy.wmz.module;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Map;
 
 import com.torandi.net.command.Exposed;
 import com.torandi.net.command.JSONCommand;
@@ -88,6 +90,16 @@ public class ApplicationManager {
 	}
 	
 	@Exposed
+	public Map<String,String> fullStatus(){
+		Map<String,String> status = new Hashtable<String,String>();
+		status.put("live_target", currentLive());
+		status.put("preview_target", currentPreview());
+		status.put("fallback_target", currentFallback());
+		status.put("is_published", isPublished() ? "yes" : "no");
+		return status;
+	}
+	
+	@Exposed
 	public String currentLive() {
 		return config.settings.StreamSwitcher_liveTarget;
 	}
@@ -106,6 +118,14 @@ public class ApplicationManager {
 	@Exposed
 	public String currentFallback() {
 		return config.settings.StreamSwitcher_fallbackStream;
+	}
+	
+	public boolean isPublished(){
+		if ( streamSwitcher != null ){
+			return streamSwitcher.isPublished();
+		} else {
+			return false;
+		}
 	}
 	
 	@Exposed
