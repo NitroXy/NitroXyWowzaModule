@@ -1,4 +1,4 @@
-var server = "rtmp://localhost/live"
+var server = "rtmp://" + window.location.hostname + "/nitroxy"
 var previewStream = "preview";
 var liveStream = "nitroxy";
 
