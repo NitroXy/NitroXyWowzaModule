@@ -1,23 +1,47 @@
+/**
+ * Make async RPC call to the backend control. It returns a jQuery Deferred
+ * object (quite similar to $.ajax)
+ */
 function remoteCall(function_name /* args ...*/) {
+	var dfd = $.Deferred();
 	var args = jQuery.makeArray(arguments).slice(1)
 
-	var sjax = new XMLHttpRequest();
-	sjax.open("POST", "backend.php", false);
-	sjax.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-	sjax.send("json="+JSON.stringify({'function': function_name, 'args': args}));
-
 	try {
-		var ret = JSON.parse(sjax.responseText);
-		if(ret.status == "success") {
-			return ret.data
-		} else {
-			console.log("Remote error: " + ret["data"])
-			return false;
-		}
-	} catch (err) {
-		console.log("remoteCall error, is the remote command up (and is the application started?) ("+err+")");
-		return false;
+		$.post('backend.php', {
+			json: JSON.stringify({
+				'function': function_name,
+				'args': args,
+			}),
+		}).done(function(reply){
+			if ( reply.status === 'success' ){
+				dfd.resolve(reply.data);
+			} else {
+				console.error("Remote error: ", reply)
+				dfd.reject(reply);
+			}
+		}).error(function(reply){
+			console.error("Remote error: ", reply)
+			dfd.reject(reply);
+		});
+	} catch (e){
+		console.error(e);
+		dfd.reject(e);
 	}
+
+	return dfd.promise();
+}
+
+/**
+ * Makes a simple RPC call where first argument is always the function name and
+ * the rest is passed as regular arguments. On success the stream info is
+ * updated and on errors a generic error message is shown.
+ */
+function simpleCall(func /* args ... */){
+	remoteCall.apply(this, arguments).done(function(){
+		updateStreamInfo();
+	}).fail(function(){
+		alert("Warning, SwitchStream is not enabled on the server");
+	});
 }
 
 $(function() {
@@ -26,37 +50,53 @@ $(function() {
 
 	setInterval(updateStreamInfo, 10000);
 
-	$("#do_change").click(function() {
-		switchStream($("#preview_stream").val());
-		return false;
-	})
+	$('form.preview-stream').submit(function(e){
+		e.preventDefault();
+		var control = $(this).find('.form-control');
+		var stream = control.val();
+		switchStream(stream);
 
-	$("#do_change_from_list").click(function() {
-		switchStream($("#preview_stream_list").val());
-		return false;
-	})
+		/* reset name for manual control */
+		if ( control.attr('type') === 'text' ){
+			control.val('');
+		}
+	});
 
-	$("#publish").click(function() {
+	$("#publish").click(function(e) {
+		e.preventDefault();
 		publish();
-		return false;
 	})
 
-	$("#republish").click(function() {
-		if(confirm("Are you sure you want to republish?")) {
+	$("#republish").click(function(e) {
+		e.preventDefault();
+		if(confirm("Are you sure you want to restart live broadcasting?")) {
 			republish();
 		}
-		return false;
 	})
 
-	$("#refresh_streams").click(function() {
+	$("#stop-stream").click(function(e) {
+		e.preventDefault();
+		if(confirm("Are you sure you want to stop live broadcasting?")) {
+			stop();
+		}
+	})
+
+	$("#refresh-streams").click(function(e) {
+		e.preventDefault();
 		updateStreamList();
-		return false;
 	})
 
-	$("#do_fallback_change").click(function() {
+	$("#do_fallback_change").click(function(e) {
+		e.preventDefault();
 		setFallbackStream($("#fallback_stream_list").val());
-		return false;
 	})
+
+	$('#preview-stream-manual .form-control').on('change keyup paste', function(){
+		var group = $(this).parents('.form-group');
+		var submit = group.find('button');
+		var empty = $(this).val().length === 0;
+		submit.prop('disabled', empty);
+	}).change();
 })
 
 function updateStreamInfo() {
@@ -82,24 +122,19 @@ function switchStream(stream) {
 		alert("Can't change to empty stream");
 		return false;
 	}
-	if(!remoteCall("switchStream", stream)) {
-		alert("Warning, SwitchStream is not enabled on the server");
-	}
-	updateStreamInfo();
+	simpleCall("switchStream", stream);
 }
 
 function publish() {
-	if(!remoteCall("publishStream")) {
-		alert("Warning, SwitchStream is not enabled on the server");
-	}
-	updateStreamInfo();
+	simpleCall("publishStream");
 }
 
 function republish() {
-	if(!remoteCall("republish")) {
-		alert("Warning, SwitchStream is not enabled on the server");
-	}
-	updateStreamInfo();
+	simpleCall("republish");
+}
+
+function stop() {
+	simpleCall("stop");
 }
 
 function setFallbackStream(stream) {
@@ -107,21 +142,22 @@ function setFallbackStream(stream) {
 		alert("Can't change to empty stream");
 		return false;
 	}
-	remoteCall("setFallback", stream);
-	updateStreamInfo();
+	simpleCall("setFallback", stream);
 }
 
 function updateStreamList() {
-	var streams = remoteCall('getStreams');
+	var form = $('#preview-stream-list');
+	form.addClass('loading');
 
-	var $list = $("#preview_stream_list")
-	var $list2 = $("#fallback_stream_list")
-
-	$list.html("");
-	$list2.html("");
-
-	$.each(streams, function(idx, stream) {
-		$list.append("<option>"+stream+"</option>")
-		$list2.append("<option>"+stream+"</option>")
-	})
+	remoteCall('getStreams').done(function(streams){
+		var list = $('#preview-stream-list select, #fallback_stream_list');
+		list.empty();
+		$.each(streams, function(idx, stream) {
+			list.append("<option>"+stream+"</option>")
+		});
+	}).fail(function(){
+		alert('Failed to update stream list, see console log for details');
+	}).always(function(){
+		form.removeClass('loading');
+	});
 }
