@@ -1,3 +1,4 @@
+<?php require('config.php'); ?>
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -20,7 +21,7 @@
 					<h2>Preview</h2>
 					<div class="flowplayer" data-live="true">
 						<video data-title="Live stream">
-							<source type="application/x-mpegurl" src="http://bacon.sidvind.com:1935/nitroxy/preview/playlist.m3u8">
+							<source type="application/x-mpegurl" src="http://<?=$config['rtmp_host']?>:1935/nitroxy/<?=$config['preview_stream']?>/playlist.m3u8">
 						</video>
 					</div>
 					<div id="preview_data"></div>
@@ -47,7 +48,7 @@
 					<h2>Live <span class="published">&#x2b24;</span></h2>
 					<div class="flowplayer" data-live="true">
 						<video data-title="Live stream">
-							<source type="application/x-mpegurl" src="http://bacon.sidvind.com:1935/nitroxy/nitroxy/playlist.m3u8">
+							<source type="application/x-mpegurl" src="http://<?=$config['rtmp_host']?>:1935/nitroxy/<?=$config['live_stream']?>/playlist.m3u8">
 						</video>
 					</div>
 					<div id="live_data"></div>

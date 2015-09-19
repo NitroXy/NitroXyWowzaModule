@@ -1,7 +1,3 @@
-var server = "rtmp://" + window.location.hostname + "/nitroxy"
-var previewStream = "preview";
-var liveStream = "nitroxy";
-
 function remoteCall(function_name /* args ...*/) {
 	var args = jQuery.makeArray(arguments).slice(1)
 
