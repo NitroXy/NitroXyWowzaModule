@@ -1,4 +1,17 @@
 <?php require('config.php'); ?>
+<?php
+
+function url_hls($stream){
+	global $config;
+	return "http://{$config['rtmp_host']}:1935/nitroxy/{$stream}/playlist.m3u8";
+}
+
+function url_rtsp($stream){
+	global $config;
+	return "rtsp://{$config['rtmp_host']}:1935/nitroxy/{$stream}";
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -114,6 +127,25 @@
 				</div>
 			</div>
 		</div>
+
+		<footer class="container-fluid">
+			<h2>External player</h2>
+			<div class="row external">
+				<div class="col-md-5">
+					<dl class="dl-horizontal">
+						<dt>HLS</dt><dd><a href="<?=url_hls($config['preview_stream']);?>"><?=url_hls($config['preview_stream']);?></a></dd>
+						<dt>RTSP</dt><dd><a href="<?=url_rtsp($config['preview_stream']);?>"><?=url_rtsp($config['preview_stream']);?></a></dd>
+					</dl>
+				</div>
+				<div class="col-md-1"></div>
+				<div class="col-md-5">
+					<dl class="dl-horizontal">
+						<dt>HLS</dt><dd><a href="<?=url_hls($config['live_stream']);?>"><?=url_hls($config['live_stream']);?></a></dd>
+						<dt>RTSP</dt><dd><a href="<?=url_rtsp($config['live_stream']);?>"><?=url_rtsp($config['live_stream']);?></a></dd>
+					</dl>
+				</div>
+			</div>
+		</footer>
 
 		<script defer src="//releases.flowplayer.org/6.0.3/flowplayer.min.js"></script>
 		<script defer src="bootstrap.min.js"></script>

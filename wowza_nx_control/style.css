@@ -79,3 +79,16 @@
 .panel.live-control a.collapsed > .fa:before {
 	content: "\f078";
 }
+
+footer {
+	font-size: 80%;
+}
+
+.external dt {
+	width: 80px;
+}
+
+.external dd {
+	font-family: monospace;
+	margin-left: 100px;
+}
