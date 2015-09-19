@@ -152,7 +152,20 @@ function updateStreamList() {
 	remoteCall('getStreams').done(function(streams){
 		var list = $('#preview-stream-list select, #fallback_stream_list');
 		list.empty();
-		streams.sort();
+
+		/* sort so actual streams comes first and VOD after */
+		streams.sort(function(a,b){
+			var ac = a.indexOf(':') >= 0;
+			var bc = b.indexOf(':') >= 0;
+			if ( (ac && bc) || !(ac || bc) ){
+				return a.localeCompare(b);
+			} else if ( ac && !bc ){
+				return 1;
+			} else if ( !ac && bc ){
+				return -1;
+			}
+		});
+
 		$.each(streams, function(idx, stream) {
 			list.append("<option>"+stream+"</option>")
 		});
