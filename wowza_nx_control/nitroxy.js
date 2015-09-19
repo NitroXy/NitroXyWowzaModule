@@ -134,7 +134,7 @@ function republish() {
 }
 
 function stop() {
-	simpleCall("stop");
+	simpleCall("stopPushPublish");
 }
 
 function setFallbackStream(stream) {
@@ -152,6 +152,7 @@ function updateStreamList() {
 	remoteCall('getStreams').done(function(streams){
 		var list = $('#preview-stream-list select, #fallback_stream_list');
 		list.empty();
+		streams.sort();
 		$.each(streams, function(idx, stream) {
 			list.append("<option>"+stream+"</option>")
 		});

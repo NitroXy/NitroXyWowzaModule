@@ -1,6 +1,11 @@
 <?php require('config.php'); ?>
 <?php
 
+function url_dash($stream){
+	global $config;
+	return "http://{$config['rtmp_host']}:1935/nitroxy/{$stream}/manifest.mpd";
+}
+
 function url_hls($stream){
 	global $config;
 	return "http://{$config['rtmp_host']}:1935/nitroxy/{$stream}/playlist.m3u8";
@@ -36,7 +41,7 @@ function url_rtsp($stream){
 						<h2>Preview</h2>
 						<div class="flowplayer" data-live="true">
 							<video data-title="Preview stream">
-								<source type="application/x-mpegurl" src="http://<?=$config['rtmp_host']?>:1935/nitroxy/<?=$config['preview_stream']?>/playlist.m3u8">
+								<source type="application/x-mpegurl" src="<?=url_hls($config['preview_stream'])?>">
 							</video>
 						</div>
 						<div id="preview_data"></div>
@@ -56,7 +61,7 @@ function url_rtsp($stream){
 						<h2>Live <span class="published fa fa-circle"></span></h2>
 						<div class="flowplayer" data-live="true">
 							<video data-title="Live stream">
-								<source type="application/x-mpegurl" src="http://<?=$config['rtmp_host']?>:1935/nitroxy/<?=$config['live_stream']?>/playlist.m3u8">
+								<source type="application/x-mpegurl" src="<?=url_hls($config['live_stream'])?>">
 							</video>
 						</div>
 						<div id="live_data"></div>
@@ -132,14 +137,18 @@ function url_rtsp($stream){
 			<h2>External player</h2>
 			<div class="row external">
 				<div class="col-md-5">
+					<h4>Preview</h4>
 					<dl class="dl-horizontal">
+						<dt>DASH</dt><dd><a href="<?=url_dash($config['preview_stream']);?>"><?=url_dash($config['preview_stream']);?></a></dd>
 						<dt>HLS</dt><dd><a href="<?=url_hls($config['preview_stream']);?>"><?=url_hls($config['preview_stream']);?></a></dd>
 						<dt>RTSP</dt><dd><a href="<?=url_rtsp($config['preview_stream']);?>"><?=url_rtsp($config['preview_stream']);?></a></dd>
 					</dl>
 				</div>
 				<div class="col-md-1"></div>
 				<div class="col-md-5">
+					<h4>Live</h4>
 					<dl class="dl-horizontal">
+						<dt>DASH</dt><dd><a href="<?=url_dash($config['live_stream']);?>"><?=url_dash($config['live_stream']);?></a></dd>
 						<dt>HLS</dt><dd><a href="<?=url_hls($config['live_stream']);?>"><?=url_hls($config['live_stream']);?></a></dd>
 						<dt>RTSP</dt><dd><a href="<?=url_rtsp($config['live_stream']);?>"><?=url_rtsp($config['live_stream']);?></a></dd>
 					</dl>
