@@ -28,6 +28,8 @@ $(function() {
 	updateStreamInfo();
 	updateStreamList();
 
+	setInterval(updateStreamInfo, 10000);
+
 	$("#do_change").click(function() {
 		switchStream($("#preview_stream").val());
 		return false;
@@ -62,9 +64,21 @@ $(function() {
 })
 
 function updateStreamInfo() {
-	$("#live_data").html("Current stream: " + remoteCall("currentLive"));
-	$("#preview_data").html("Current stream: " + remoteCall("currentPreview"));
-	$("#fallback_stream").html("Current fallback: " + remoteCall("currentFallback"));
+	$.post('backend.php', {
+		json: JSON.stringify({
+			'function': 'fullStatus',
+			'args': []
+		}),
+	}).done(function(reply){
+		if ( reply.status === 'success' ){
+			$("#live_data").html("Current stream: " + reply.data.live_target);
+			$("#preview_data").html("Current stream: " + reply.data.preview_target);
+			$("#fallback_stream").html("Current fallback: " + reply.data.fallback_target);
+			$('.published').toggle(reply.data.is_published !== 'no');
+		} else {
+			console.error("Remote error: ", reply)
+		}
+	});
 }
 
 function switchStream(stream) {

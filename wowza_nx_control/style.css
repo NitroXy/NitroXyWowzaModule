@@ -1,0 +1,14 @@
+.published {
+	font-size: 70%;
+	vertical-align: middle;
+	padding-bottom: 5px;
+	color: #f00;
+	animation: blink 1s steps(5, start) infinite;
+	display: none;
+}
+
+@keyframes blink {
+	to {
+		visibility: hidden;
+	}
+}
