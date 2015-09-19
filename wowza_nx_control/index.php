@@ -36,27 +36,7 @@ function url_rtsp($stream){
 			<h1>NitroXy media control</h1>
 
 			<div class="row vertical-align">
-				<div class="col-md-5 preview">
-					<div class="inner">
-						<h2>Preview</h2>
-						<div class="flowplayer" data-live="true">
-							<video data-title="Preview stream">
-								<source type="application/x-mpegurl" src="<?=url_hls($config['preview_stream'])?>">
-							</video>
-						</div>
-						<div id="preview_data"></div>
-					</div>
-				</div>
-
-				<div class="col-md-1 actions">
-					<div class="inner">
-						<button type="button" id="publish" class="btn btn-success btn-lg" title="Publish previewed stream to live stream">
-							<span class="fa fa-chevron-right">
-						</button>
-					</div>
-				</div>
-
-				<div class="col-md-5 live">
+				<div class="col-sm-5 col-sm-push-6 live">
 					<div class="inner">
 						<h2>Live <span class="published fa fa-circle"></span></h2>
 						<div class="flowplayer" data-live="true">
@@ -65,6 +45,26 @@ function url_rtsp($stream){
 							</video>
 						</div>
 						<div id="live_data"></div>
+					</div>
+				</div>
+
+				<div class="col-sm-1 actions">
+					<div class="inner">
+						<button type="button" id="publish" class="btn btn-success btn-lg" title="Publish previewed stream to live stream">
+							<span class="fa publish-icon">
+						</button>
+					</div>
+				</div>
+
+				<div class="col-sm-5 col-sm-pull-6  preview">
+					<div class="inner">
+						<h2>Preview</h2>
+						<div class="flowplayer" data-live="true">
+							<video data-title="Preview stream">
+								<source type="application/x-mpegurl" src="<?=url_hls($config['preview_stream'])?>">
+							</video>
+						</div>
+						<div id="preview_data"></div>
 					</div>
 				</div>
 			</div>

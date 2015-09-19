@@ -1,17 +1,19 @@
-.vertical-align {
-	display: flex;
-	flex-direction: row;
-}
+@media (min-width: 768px){
+	.vertical-align {
+		display: flex;
+		flex-direction: row;
+	}
 
-.vertical-align > [class^="col-"],
-.vertical-align > [class*=" col-"] {
-	display: flex;
-	align-items: center;
-}
+	.vertical-align > [class^="col-"],
+	.vertical-align > [class*=" col-"] {
+		display: flex;
+		align-items: center;
+	}
 
-.vertical-align > .preview,
-.vertical-align > .live {
-	align-items: initial;
+	.vertical-align > .preview,
+	.vertical-align > .live {
+		align-items: initial;
+	}
 }
 
 .inner {
@@ -20,7 +22,21 @@
 
 .actions > .inner {
 	text-align: center;
-	margin-top: 50px; /* offset headings in other columns so this appears centered with respect to video */
+	margin-top: 30px;
+}
+
+.publish-icon:before {
+	content: " Publish preview to live stream";
+}
+
+@media (min-width: 768px){
+	.actions > .inner {
+		margin-top: 50px; /* offset headings in other columns so this appears centered with respect to video */
+	}
+
+	.publish-icon:before {
+		content: "\f054";
+	}
 }
 
 .published {
