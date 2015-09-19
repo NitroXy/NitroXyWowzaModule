@@ -8,6 +8,7 @@
 		<title>NitroXy Media Control</title>
 		<link href="bootstrap.min.css" rel="stylesheet">
 		<link rel="stylesheet" href="//releases.flowplayer.org/6.0.3/skin/functional.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 		<link href="style.css" rel="stylesheet">
 		<script src="jquery.min.js"></script>
 		<script type='text/javascript' src="nitroxy.js"></script>
@@ -45,7 +46,7 @@
 				</div>
 
 				<div class="col-md-5">
-					<h2>Live <span class="published">&#x2b24;</span></h2>
+					<h2>Live <span class="published fa fa-circle"></span></h2>
 					<div class="flowplayer" data-live="true">
 						<video data-title="Live stream">
 							<source type="application/x-mpegurl" src="http://<?=$config['rtmp_host']?>:1935/nitroxy/<?=$config['live_stream']?>/playlist.m3u8">
