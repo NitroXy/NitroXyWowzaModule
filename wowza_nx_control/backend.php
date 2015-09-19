@@ -6,6 +6,8 @@ $chunk_size = 4096;
 
 $data = $_POST['json'];
 
+header('Content-Type: application/json; charset=UTF-8');
+
 if(isset($data)) {
 	$sck=socket_create(AF_INET,SOCK_STREAM,0) or die("Could not create socket");
 	if(socket_connect($sck, $cmd_host, $cmd_port)) {
