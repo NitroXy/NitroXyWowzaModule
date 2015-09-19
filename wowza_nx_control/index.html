@@ -6,46 +6,23 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>NitroXy Media Control</title>
 		<link href="bootstrap.min.css" rel="stylesheet">
+		<link rel="stylesheet" href="//releases.flowplayer.org/6.0.3/skin/functional.css">
 		<link href="style.css" rel="stylesheet">
-		<script src="AC_RunActiveContent.js" language="javascript"></script>
 		<script src="jquery.min.js"></script>
 		<script type='text/javascript' src="nitroxy.js"></script>
 	</head>
 	<body>
 		<div class="container-fluid" style="margin: 15px">
 			<h1>NitroXy media control</h1>
+
 			<div class="row">
 				<div class="col-md-5">
 					<h2>Preview</h2>
-					<script language="javascript">
-					AC_FL_RunContent(
-						'codebase', 'http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0',
-						'width', '636',
-						'height', '450',
-						'src', 'live',
-						'quality', 'high',
-						'pluginspage', 'http://www.macromedia.com/go/getflashplayer',
-						'align', 'middle',
-						'play', 'true',
-						'loop', 'true',
-						'scale', 'showall',
-						'wmode', 'window',
-						'devicefont', 'false',
-						'id', 'preview',
-						'bgcolor', '#000000',
-						'name', 'preview',
-						'menu', 'true',
-						'allowFullScreen', 'true',
-						'allowScriptAccess','sameDomain',
-						'movie', 'live',
-						'salign', '',
-						'stream', 'preview'
-					); //end AC code
-					setTimeout(function() {
-						$("embed[name=preview]")[0].setStream(previewStream);
-						$("embed[name=preview]")[0].setServer(server);
-					}, 1000)
-					</script>
+					<div class="flowplayer" data-live="true">
+						<video data-title="Live stream">
+							<source type="application/x-mpegurl" src="http://bacon.sidvind.com:1935/nitroxy/preview/playlist.m3u8">
+						</video>
+					</div>
 					<div id="preview_data"></div>
 					<div>
 						<h4>Change preview stream</h4>
@@ -68,34 +45,11 @@
 
 				<div class="col-md-5">
 					<h2>Live <span class="published">&#x2b24;</span></h2>
-					<script language="javascript">
-					AC_FL_RunContent(
-						'codebase', 'http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0',
-						'width', '636',
-						'height', '450',
-						'src', 'live',
-						'quality', 'high',
-						'pluginspage', 'http://www.macromedia.com/go/getflashplayer',
-						'align', 'middle',
-						'play', 'true',
-						'loop', 'true',
-						'scale', 'showall',
-						'wmode', 'window',
-						'devicefont', 'false',
-						'id', 'live',
-						'bgcolor', '#000000',
-						'name', 'live',
-						'menu', 'true',
-						'allowFullScreen', 'true',
-						'allowScriptAccess','sameDomain',
-						'movie', 'live',
-						'salign', ''
-					); //end AC code
-					setTimeout(function() {
-						$("embed[name=live]")[0].setStream(liveStream);
-						$("embed[name=live]")[0].setServer(server);
-					}, 1000)
-					</script>
+					<div class="flowplayer" data-live="true">
+						<video data-title="Live stream">
+							<source type="application/x-mpegurl" src="http://bacon.sidvind.com:1935/nitroxy/nitroxy/playlist.m3u8">
+						</video>
+					</div>
 					<div id="live_data"></div>
 					<div>
 						<form class='form-inline' style='margin-bottom: 10px'>
@@ -120,5 +74,7 @@
 				</div>
 			</div>
 		</div>
+
+		<script defer src="//releases.flowplayer.org/6.0.3/flowplayer.min.js"></script>
 	</body>
 </html>
