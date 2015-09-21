@@ -10,7 +10,6 @@ public class XStreamReciver implements Runnable {
     private boolean run = true;
     private BufferedInputStream stream=null;
     private XSocket sck = null;
-    private StreamHndl lastHndl=null;
     private long lastInData = 0;
     public long idleMode = 5000;
     public long delay = 100;
@@ -62,7 +61,9 @@ public class XStreamReciver implements Runnable {
                             
                             for(int i=0;i<data.length;i++) {
                                 if(!data[i].trim().equals("")) {
-                                    lastHndl = new StreamHndl(sck,data[i],b2);
+                                    /* this call has side-effects */
+                                    new StreamHndl(sck, data[i], b2);
+
                                     lastInData = System.currentTimeMillis();
                                 }
                             }

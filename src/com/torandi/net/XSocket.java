@@ -6,7 +6,6 @@ import java.nio.ByteBuffer;
 
 public class XSocket extends Socket{
     private XServerSocket srv=null;
-    private Socket sck = null;
     private String host=null;
     private int port=0;
     private InetSocketAddress adrs = null;
@@ -87,12 +86,12 @@ public class XSocket extends Socket{
         this.port = port;
         try {
             server = true;
-            srv = new XServerSocket(port);
+            srv = new XServerSocket(this.port);
             srv.accept(this);
             initStreams();
             return true;
         } catch (Exception e) {
-            println("XSocket: Failed to listen@port "+port+" ("+e+")");
+            println("XSocket: Failed to listen@port "+this.port+" ("+e+")");
             return false;
         }
     }
@@ -117,7 +116,7 @@ public class XSocket extends Socket{
         this.host = host;
         this.port = port;
         try {
-            adrs = new InetSocketAddress(host,port);
+            adrs = new InetSocketAddress(this.host, this.port);
             super.connect(adrs,port);
             initStreams();
             return true;

@@ -8,7 +8,6 @@ import java.util.Map;
 import com.torandi.net.command.Exposed;
 import com.torandi.net.command.JSONCommand;
 import com.wowza.wms.application.IApplicationInstance;
-import com.wowza.wms.bootstrap.Bootstrap;
 import com.wowza.wms.server.LicensingException;
 import com.wowza.wms.stream.IMediaStream;
 
