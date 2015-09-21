@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" output="bin" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/usr/local/WowzaStreamingEngine/lib/jackson-core-2.1.1.jar"/>
 	<classpathentry kind="lib" path="/usr/local/WowzaStreamingEngine/lib/wms-commons-modeler.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="file:/usr/local/WowzaStreamingEngine/documentation/serverapi"/>
@@ -13,7 +12,7 @@
 			<attribute name="javadoc_location" value="file:/usr/local/WowzaStreamingEngine/documentation/serverapi"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/usr/local/WowzaStreamingEngine/lib/wms-restlet-2.1.6.jar">
+	<classpathentry kind="lib" path="/usr/local/WowzaStreamingEngine/lib/wms-restlet-2.2.2.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="file:/usr/local/WowzaStreamingEngine/documentation/serverapi"/>
 		</attributes>
@@ -34,6 +33,11 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/usr/local/WowzaStreamingEngine/lib/wms-rest.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/usr/local/WowzaStreamingEngine/documentation/serverapi"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/usr/local/WowzaStreamingEngine/lib/wms-mediawriter-webm.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="file:/usr/local/WowzaStreamingEngine/documentation/serverapi"/>
 		</attributes>
@@ -64,11 +68,6 @@
 			<attribute name="javadoc_location" value="file:/usr/local/WowzaStreamingEngine/documentation/serverapi"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/usr/local/WowzaStreamingEngine/lib/wms-restlet-2.1.6.org.restlet.ext.simple.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/usr/local/WowzaStreamingEngine/documentation/serverapi"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="/usr/local/WowzaStreamingEngine/lib/slf4j-log4j12-1.6.4.jar"/>
 	<classpathentry kind="lib" path="/usr/local/WowzaStreamingEngine/lib/commons-lang-2.6.jar"/>
 	<classpathentry kind="lib" path="/usr/local/WowzaStreamingEngine/lib/wms-amazonutil.jar">
@@ -91,12 +90,16 @@
 			<attribute name="javadoc_location" value="file:/usr/local/WowzaStreamingEngine/documentation/serverapi"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/usr/local/WowzaStreamingEngine/lib/wms-sourcecontrol.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/usr/local/WowzaStreamingEngine/documentation/serverapi"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="/usr/local/WowzaStreamingEngine/lib/wms-mediareader-mp3.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="file:/usr/local/WowzaStreamingEngine/documentation/serverapi"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/usr/local/WowzaStreamingEngine/lib/jackson-annotations-2.1.1.jar"/>
 	<classpathentry kind="lib" path="/usr/local/WowzaStreamingEngine/lib/joda-time-2.3.jar"/>
 	<classpathentry kind="lib" path="/usr/local/WowzaStreamingEngine/lib/wms-dvr.jar">
 		<attributes>
@@ -123,6 +126,11 @@
 			<attribute name="javadoc_location" value="file:/usr/local/WowzaStreamingEngine/documentation/serverapi"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/usr/local/WowzaStreamingEngine/lib/wms-httpstreamer-tsstreaming.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/usr/local/WowzaStreamingEngine/documentation/serverapi"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="/usr/local/WowzaStreamingEngine/lib/NitroxyWowzaModule.jar"/>
 	<classpathentry kind="lib" path="/usr/local/WowzaStreamingEngine/lib/wms-stats.jar">
 		<attributes>
@@ -145,6 +153,11 @@
 			<attribute name="javadoc_location" value="file:/usr/local/WowzaStreamingEngine/documentation/serverapi"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/usr/local/WowzaStreamingEngine/lib/wms-restlet-2.2.2.org.restlet.ext.simple.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/usr/local/WowzaStreamingEngine/documentation/serverapi"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="/usr/local/WowzaStreamingEngine/lib/wms-pushpublish.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="file:/usr/local/WowzaStreamingEngine/documentation/serverapi"/>
@@ -156,6 +169,16 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/usr/local/WowzaStreamingEngine/lib/wms-stream-live.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/usr/local/WowzaStreamingEngine/documentation/serverapi"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/usr/local/WowzaStreamingEngine/lib/wms-mediareader-webm.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/usr/local/WowzaStreamingEngine/documentation/serverapi"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/usr/local/WowzaStreamingEngine/lib/wms-httpstreamer-webmstreaming.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="file:/usr/local/WowzaStreamingEngine/documentation/serverapi"/>
 		</attributes>
@@ -186,14 +209,8 @@
 			<attribute name="javadoc_location" value="file:/usr/local/WowzaStreamingEngine/documentation/serverapi"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/usr/local/WowzaStreamingEngine/lib/jackson-databind-2.1.1.jar"/>
 	<classpathentry kind="lib" path="/usr/local/WowzaStreamingEngine/lib/wowzaderp.jar"/>
 	<classpathentry kind="lib" path="/usr/local/WowzaStreamingEngine/lib/wms-mediawriter-h264.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/usr/local/WowzaStreamingEngine/documentation/serverapi"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/usr/local/WowzaStreamingEngine/lib/wms-plugin-collection.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="file:/usr/local/WowzaStreamingEngine/documentation/serverapi"/>
 		</attributes>

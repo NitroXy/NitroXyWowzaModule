@@ -15,6 +15,7 @@ public class NitroXyModule extends ModuleBase implements Logger {
 	private HashMap<IApplicationInstance, ApplicationManager> managers = new HashMap<IApplicationInstance, ApplicationManager>();
 	
 	public void onAppStart(IApplicationInstance appInstance) throws LicensingException {
+		info("NitroXyModule::onAppStart()");
 		ApplicationManager mngr = new ApplicationManager(this, appInstance);
 		managers.put(appInstance, mngr);
 	}
