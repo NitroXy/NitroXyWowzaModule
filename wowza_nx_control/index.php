@@ -33,6 +33,10 @@ function url_rtsp($stream){
 	</head>
 	<body>
 		<div class="container-fluid" style="margin: 15px">
+			<div id="disconnected" style="display: none;">
+				<p>Lost connection to backend, reload page to retry.</p>
+				<i class="fa fa-2x fa-chain-broken"></i>
+			</div>
 			<h1>NitroXy media control</h1>
 
 			<div class="row vertical-align">

@@ -1,3 +1,7 @@
+var error_count = 0;
+var update_timer;
+var error_timer;
+
 /**
  * Make async RPC call to the backend control. It returns a jQuery Deferred
  * object (quite similar to $.ajax)
@@ -24,10 +28,12 @@ function remoteCall(function_name /* args ...*/) {
 				dfd.reject(reply);
 			}
 		}).error(function(reply){
+			error_count++;
 			console.error("Remote error: ", reply.responseJSON || reply.responseText);
 			dfd.reject(reply);
 		});
 	} catch (e){
+		error_count++;
 		console.error(e);
 		dfd.reject(e);
 	}
@@ -52,13 +58,24 @@ $(function() {
 	updateStreamInfo();
 	updateStreamList();
 
-	setInterval(function(){
+	update_timer = setInterval(function(){
 		if ( !isUpdating ){
 			updateStreamInfo();
 		} else {
 			console.error('Update skipped because the previous request is still ongoing.');
 		}
 	}, 10000);
+
+	error_timer = setInterval(function(){
+		if ( error_count < 5 ){
+			error_count = 0;
+		} else {
+			console.error('Too many errors, bailing out');
+			$('#disconnected').show();
+			clearInterval(update_timer);
+			clearInterval(error_timer);
+		}
+	}, 60 * 1000);
 
 	$('form.preview-stream').submit(function(e){
 		e.preventDefault();
