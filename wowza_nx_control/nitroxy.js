@@ -48,7 +48,13 @@ $(function() {
 	updateStreamInfo();
 	updateStreamList();
 
-	setInterval(updateStreamInfo, 10000);
+	setInterval(function(){
+		if ( !isUpdating ){
+			updateStreamInfo();
+		} else {
+			console.error('Update skipped because the previous request is still ongoing.');
+		}
+	}, 10000);
 
 	$('form.preview-stream').submit(function(e){
 		e.preventDefault();
@@ -99,7 +105,9 @@ $(function() {
 	}).change();
 })
 
+var isUpdating = false;
 function updateStreamInfo() {
+	isUpdating = true;
 	$.post('backend.php', {
 		json: JSON.stringify({
 			'function': 'fullStatus',
@@ -114,6 +122,8 @@ function updateStreamInfo() {
 		} else {
 			console.error("Remote error: ", reply)
 		}
+	}).always(function(){
+		isUpdating = false;
 	});
 }
 
