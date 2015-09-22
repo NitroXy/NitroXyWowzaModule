@@ -7,8 +7,12 @@ function remoteCall(function_name /* args ...*/) {
 	var args = jQuery.makeArray(arguments).slice(1)
 
 	try {
-		$.post('backend.php', {
-			json: JSON.stringify({
+		$.ajax({
+			url: 'backend.php',
+			type: 'POST',
+			contentType: 'application/json',
+			processData: false,
+			data: JSON.stringify({
 				'function': function_name,
 				'args': args,
 			}),
@@ -20,7 +24,7 @@ function remoteCall(function_name /* args ...*/) {
 				dfd.reject(reply);
 			}
 		}).error(function(reply){
-			console.error("Remote error: ", reply)
+			console.error("Remote error: ", reply.responseJSON || reply.responseText);
 			dfd.reject(reply);
 		});
 	} catch (e){
@@ -108,12 +112,7 @@ $(function() {
 var isUpdating = false;
 function updateStreamInfo() {
 	isUpdating = true;
-	$.post('backend.php', {
-		json: JSON.stringify({
-			'function': 'fullStatus',
-			'args': []
-		}),
-	}).done(function(reply){
+	remoteCall('fullStatus').done(function(reply){
 		if ( reply.status === 'success' ){
 			$("#live_data").html("Current stream: " + reply.data.live_target);
 			$("#preview_data").html("Current stream: " + reply.data.preview_target);
@@ -158,6 +157,8 @@ function setFallbackStream(stream) {
 function updateStreamList() {
 	var form = $('#preview-stream-list');
 	form.addClass('loading');
+	form.removeClass('has-error');
+	form.find('.help-block').remove();
 
 	remoteCall('getStreams').done(function(streams){
 		var list = $('#preview-stream-list select, #fallback_stream_list');
@@ -180,7 +181,8 @@ function updateStreamList() {
 			list.append("<option>"+stream+"</option>")
 		});
 	}).fail(function(){
-		alert('Failed to update stream list, see console log for details');
+		form.addClass('has-error');
+		form.append('<span class="help-block">Failed to update stream list, see console log for defaults.</span>');
 	}).always(function(){
 		form.removeClass('loading');
 	});
