@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.torandi.net.command.Exposed;
 import com.torandi.net.command.JSONCommand;
@@ -30,7 +32,14 @@ public class ApplicationManager {
 		}
 	}
 	
-	
+	protected String liveStreamName(){
+		return config.settings.StreamSwitcher_liveStream;
+	}
+
+	protected String previewStreamName(){
+		return config.settings.StreamSwitcher_previewStream;
+	}
+
 	
 	public boolean enabled() {
 		return config.exists();
@@ -56,11 +65,18 @@ public class ApplicationManager {
 	
 	@Exposed
 	public ArrayList<String> getStreams() {
+		Pattern p = Pattern.compile("^\\[.+\\].+");
+
 		ArrayList<String> streams = new ArrayList<String>();
 		for(IMediaStream s : appInstance.getStreams().getStreams()) {
-			if(!s.getName().equalsIgnoreCase(config.settings.StreamSwitcher_liveStream)
-					&& !s.getName().equalsIgnoreCase(config.settings.StreamSwitcher_previewStream))
-			streams.add(s.getName());
+			String name = s.getName();
+			Matcher m = p.matcher(name);
+
+			if ( name.equalsIgnoreCase(liveStreamName()) ) continue;
+			if ( name.equalsIgnoreCase(previewStreamName()) ) continue;
+			if ( m.matches() ) continue;
+
+			streams.add(name);
 		}
 		
 		/* list content */

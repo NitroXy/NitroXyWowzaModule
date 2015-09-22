@@ -21,6 +21,7 @@ public class NitroXyModule extends ModuleBase implements Logger {
 	}
 
 	public void onAppStop(IApplicationInstance appInstance) {
+		info("NitroXyModule::onAppStop");
 		managers.remove(appInstance);
 	}
 
