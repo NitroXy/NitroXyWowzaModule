@@ -82,7 +82,7 @@ function url_rtsp($stream){
 						<label class="control-label">Available streams</label>
 						<div class="input-group">
 							<span class="input-group-btn">
-								<button class="btn btn-default" data-action="refrsh-streams" type="button" title="Refresh stream list"><span class="fa fa-refresh"></span></button>
+								<button class="btn btn-default" data-action="refresh-streams" type="button" title="Refresh stream list"><span class="fa fa-refresh"></span></button>
 							</span>
 							<select id="preview_stream_list" class="form-control stream-list"></select>
 							<span class="input-group-btn">
