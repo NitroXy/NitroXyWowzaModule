@@ -30,15 +30,13 @@ public class StreamSwitcher {
 		main.info("StreamSwitcher::constructor()");
 
 		/* create streams */
+		main.info("StreamSwitcher creating streams live="+config.settings.StreamSwitcher_liveStream + ", preview=" + config.settings.StreamSwitcher_previewStream);
 		liveStream = Stream.createInstance(appInstance, config.settings.StreamSwitcher_liveStream);
 		previewStream = Stream.createInstance(appInstance, config.settings.StreamSwitcher_previewStream);
 		
-		if(config.settings.StreamSwitcher_previewStream != null && !config.settings.StreamSwitcher_previewStream.equals("")) {
-			playStream(liveStream, config.settings.StreamSwitcher_previewTarget);
-			main.info("Started "+config.settings.StreamSwitcher_previewTarget + " on preview stream");
-		}
-		
-		main.info("Application: "+appInstance.getApplication().getName() + ". Live: "+config.settings.StreamSwitcher_liveStream + ". Preview:" + config.settings.StreamSwitcher_previewStream);
+		/* restore streams if possible */
+		playStream(previewStream, config.settings.StreamSwitcher_previewTarget);
+		playStream(liveStream, config.settings.StreamSwitcher_liveTarget);
 	}
 	
 	public void close(){
@@ -114,6 +112,7 @@ public class StreamSwitcher {
 		if(publisher != null) {
 			publisher.disconnect();
 			publisher = null;
+			main.info("Stopped push publishing");
 		}
 	}
 	
@@ -121,7 +120,12 @@ public class StreamSwitcher {
 		return publisher != null;
 	}
 	
-	private void playStream(Stream on, String stream) {
+	protected void playStream(Stream on, String stream) {
+		/* sanity check */
+		if ( stream == null || stream.equals("") ){
+			return;
+		}
+
 		if(on == liveStream) {
 			realLiveStream = null;
 		} else if(on == previewStream) {
@@ -137,6 +141,8 @@ public class StreamSwitcher {
 			on.play(stream, -2, -1, true);
 			on.setRepeat(false);
 		}
+
+		main.info("Playing " + stream + " on " + on.getName() + " stream");
 	}
 	
 	private void onPublish(String streamName) {
