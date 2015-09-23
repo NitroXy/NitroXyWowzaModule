@@ -121,6 +121,26 @@ function url_rtsp($stream){
 							</button>
 						</div>
 					</div>
+
+					<h4>Segmentation</h4>
+					<p>Split ongoing recording into a new file. Preferably this should be done before each match or some other activity.</p>
+
+					<form class="form-group">
+						<button type="button" id="segment-current" class="btn btn-primary" title="Segment the stream which is currently live"><span class="fa fa-eject"></span> Segment live</button>
+					</form>
+
+					<form class="form-group" id="segment-stream">
+						<label class="control-label">Segment stream</label>
+						<div class="input-group">
+							<span class="input-group-btn">
+								<button class="btn btn-default" type="button" data-action="refresh-streams" title="Refresh stream list"><span class="fa fa-refresh"></span></button>
+							</span>
+							<select class="form-control stream-list" data-filter="stream"></select>
+							<span class="input-group-btn">
+								<button class="btn btn-default" type="submit" title="Segment selected"><span class="fa fa-eject"></span></button>
+							</span>
+						</div>
+					</form>
 				</div>
 			</div>
 

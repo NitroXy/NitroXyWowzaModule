@@ -124,6 +124,21 @@ $(function() {
 		var empty = $(this).val().length === 0;
 		submit.prop('disabled', empty);
 	}).change();
+
+	$('#segment-current').click(function(e){
+		e.preventDefault();
+		segmentStream();
+	});
+
+	$('form#segment-stream').submit(function(e){
+		e.preventDefault();
+		var select = $(this).find('select');
+		var stream = select.val();
+		if ( stream ){
+			segmentStream(stream);
+		}
+		select.val('');
+	});
 })
 
 var isUpdating = false;
@@ -145,6 +160,10 @@ function switchStream(stream) {
 		return false;
 	}
 	simpleCall("switchStream", stream);
+}
+
+function segmentStream(stream){
+	simpleCall('segment', stream || '');
 }
 
 function publish() {
