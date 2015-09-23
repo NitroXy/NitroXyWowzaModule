@@ -22,7 +22,11 @@ public class NitroXyModule extends ModuleBase implements Logger {
 
 	public void onAppStop(IApplicationInstance appInstance) {
 		info("NitroXyModule::onAppStop");
-		managers.remove(appInstance);
+
+		ApplicationManager mngr = managers.remove(appInstance);
+		if ( mngr != null ){
+			mngr.stop();
+		}
 	}
 
 	public void onConnect(IClient client, RequestFunction function,

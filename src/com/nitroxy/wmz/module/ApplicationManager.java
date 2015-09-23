@@ -39,16 +39,28 @@ public class ApplicationManager {
 			command = new JSONCommand<ApplicationManager>(main, this, config.settings.Control_Address, config.settings.Control_Port);
 		}
 
-		setupRecording();
+		startRecording();
 	}
 
-	protected void setupRecording(){
+	public void stop() {
+		if ( streamSwitcher != null ){
+			streamSwitcher.close();
+		}
+
+		stopRecording();
+	}
+
+	protected void startRecording(){
 		StreamRecorderParameters record = new StreamRecorderParameters(this.appInstance);
 		record.segmentationType = IStreamRecorderConstants.SEGMENT_NONE;
 		record.fileVersionDelegate = new StreamRecorderSimpleFileVersionDelegate();
 		vhost.getLiveStreamRecordManager().startRecording(appInstance, record);
 	}
 	
+	protected void stopRecording(){
+		vhost.getLiveStreamRecordManager().stopRecording(appInstance);
+	}
+
 	protected String liveStreamName(){
 		return config.settings.StreamSwitcher_liveStream;
 	}
@@ -56,7 +68,6 @@ public class ApplicationManager {
 	protected String previewStreamName(){
 		return config.settings.StreamSwitcher_previewStream;
 	}
-
 	
 	public boolean enabled() {
 		return config.exists();

@@ -27,8 +27,10 @@ public class StreamSwitcher {
 		this.config = config;
 		this.appInstance = appInstance;
 		
-		liveStream = Stream.createInstance(appInstance, config.settings.StreamSwitcher_liveStream);
+		main.info("StreamSwitcher::constructor()");
 
+		/* create streams */
+		liveStream = Stream.createInstance(appInstance, config.settings.StreamSwitcher_liveStream);
 		previewStream = Stream.createInstance(appInstance, config.settings.StreamSwitcher_previewStream);
 		
 		if(config.settings.StreamSwitcher_previewStream != null && !config.settings.StreamSwitcher_previewStream.equals("")) {
@@ -37,6 +39,13 @@ public class StreamSwitcher {
 		}
 		
 		main.info("Application: "+appInstance.getApplication().getName() + ". Live: "+config.settings.StreamSwitcher_liveStream + ". Preview:" + config.settings.StreamSwitcher_previewStream);
+	}
+	
+	public void close(){
+		main.info("StreamSwitcher::close()");
+		stopPushPublish();
+		liveStream.close();
+		previewStream.close();
 	}
 	
 	public void startPushPublish() {
