@@ -10,19 +10,27 @@ import java.util.regex.Pattern;
 import com.torandi.net.command.Exposed;
 import com.torandi.net.command.JSONCommand;
 import com.wowza.wms.application.IApplicationInstance;
+import com.wowza.wms.livestreamrecord.manager.IStreamRecorderConstants;
+import com.wowza.wms.livestreamrecord.manager.StreamRecorderParameters;
+import com.wowza.wms.livestreamrecord.manager.StreamRecorderSimpleFileVersionDelegate;
 import com.wowza.wms.server.LicensingException;
 import com.wowza.wms.stream.IMediaStream;
+import com.wowza.wms.vhost.IVHost;
 
 public class ApplicationManager {
 	private Config config;
 	private StreamSwitcher streamSwitcher = null;
 	private NitroXyModule main;
 	private IApplicationInstance appInstance;
+	private IVHost vhost;
 	
 	JSONCommand<ApplicationManager> command;
 	
 	public ApplicationManager(NitroXyModule main, IApplicationInstance appInstance) throws LicensingException {
 		this.appInstance = appInstance;
+		this.main = main;
+		this.vhost = appInstance.getVHost();
+
 		config = Config.getConfig(appInstance.getApplication().getName(), main);
 		if(config.exists()) {
 			if(config.settings.StreamSwitcher_Enabled) {
@@ -30,6 +38,15 @@ public class ApplicationManager {
 			}
 			command = new JSONCommand<ApplicationManager>(main, this, config.settings.Control_Address, config.settings.Control_Port);
 		}
+
+		setupRecording();
+	}
+
+	protected void setupRecording(){
+		StreamRecorderParameters record = new StreamRecorderParameters(this.appInstance);
+		record.segmentationType = IStreamRecorderConstants.SEGMENT_NONE;
+		record.fileVersionDelegate = new StreamRecorderSimpleFileVersionDelegate();
+		vhost.getLiveStreamRecordManager().startRecording(appInstance, record);
 	}
 	
 	protected String liveStreamName(){
@@ -162,5 +179,12 @@ public class ApplicationManager {
 	public void startPushPublish() {
 		if(streamSwitcher != null)
 			streamSwitcher.stopPushPublish();
+	}
+
+	@Exposed
+	public boolean segment(){
+		main.info("Segmenting live stream recording - " + currentLive());
+		vhost.getLiveStreamRecordManager().splitRecording(appInstance, currentLive());
+		return true;
 	}
 }
