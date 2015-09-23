@@ -71,12 +71,12 @@
 	z-index: 11;
 }
 
-.preview-stream.loading:before {
+.form-group.loading:before {
 	/* hack but easier (but FA supports animations so might switch to that at some point) */
 	background-position: 11px 34px;
 }
 
-.preview-stream.loading .fa-refresh:before {
+.form-group.loading .fa-refresh:before {
 	visibility: hidden;
 }
 

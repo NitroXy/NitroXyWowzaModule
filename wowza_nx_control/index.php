@@ -78,25 +78,25 @@ function url_rtsp($stream){
 					<h4>Change preview stream</h4>
 					<p>Use this to preview video before pushing changes to live stream. Due to inherited buffering changes will not be visible immediately so be patient.</p>
 
-					<form class="form-group preview-stream" id="preview-stream-list">
+					<form class="form-group" id="preview-stream-list">
 						<label class="control-label">Available streams</label>
 						<div class="input-group">
 							<span class="input-group-btn">
-								<button id="refresh-streams" class="btn btn-default" type="button" title="Refresh stream list"><span class="fa fa-refresh"></span></button>
+								<button class="btn btn-default" data-action="refrsh-streams" type="button" title="Refresh stream list"><span class="fa fa-refresh"></span></button>
 							</span>
-							<select id="preview_stream_list" class="form-control"></select>
+							<select id="preview_stream_list" class="form-control stream-list"></select>
 							<span class="input-group-btn">
 								<button class="btn btn-primary" type="submit" title="Change to selected"><span class="fa fa-play"></span></button>
 							</span>
 						</div>
 					</form>
 
-					<form class="form-group preview-stream" id="preview-stream-manual">
+					<form class="form-group" id="preview-stream-manual">
 						<label class="control-label">Select manually</label>
 						<div class="input-group">
 							<input type="text" id="preview_stream" class="form-control" placeholder="Stream name"/>
 							<span class="input-group-btn">
-								<button class="btn btn-primary" type="submit" title="Change to selected"><span class="fa fa-play"></span></button>
+								<button class="btn btn-default" type="submit" title="Change to selected"><span class="fa fa-play"></span></button>
 							</span>
 						</div>
 					</form>
@@ -128,10 +128,19 @@ function url_rtsp($stream){
 				<div class="col-md-5">
 					<h4>Fallback stream</h4>
 					<p>The fallback stream is played when the regular stream is finished or down.</p>
-					<div id="fallback_stream"></div>
-					<form class='form-inline' style='margin-bottom: 10px'>
-						<select id='fallback_stream_list' class='form-control' style='width: 150px'></select>
-						<input type='submit' value='Change to selected' id='do_fallback_change' class='btn btn-primary'/>
+
+					<form class="form-group fallback-stream" id="fallback-stream">
+						<label class="control-label">Available streams</label>
+						<div class="input-group">
+							<span class="input-group-btn">
+								<button class="btn btn-default" type="button" data-action="refresh-streams" title="Refresh stream list"><span class="fa fa-refresh"></span></button>
+							</span>
+							<select class="form-control stream-list"></select>
+							<span class="input-group-btn">
+								<button class="btn btn-default" type="submit" title="Change to selected"><span class="fa fa-play-circle"></span></button>
+							</span>
+						</div>
+						<span class="help-block current"></span>
 					</form>
 				</div>
 			</div>

@@ -77,7 +77,7 @@ $(function() {
 		}
 	}, 60 * 1000);
 
-	$('form.preview-stream').submit(function(e){
+	$('form#preview-stream-list').submit(function(e){
 		e.preventDefault();
 		var control = $(this).find('.form-control');
 		var stream = control.val();
@@ -108,14 +108,14 @@ $(function() {
 		}
 	})
 
-	$("#refresh-streams").click(function(e) {
+	$('button[data-action="refresh-streams"]').click(function(e) {
 		e.preventDefault();
 		updateStreamList();
 	})
 
-	$("#do_fallback_change").click(function(e) {
+	$("form#fallback-stream").submit(function(e) {
 		e.preventDefault();
-		setFallbackStream($("#fallback_stream_list").val());
+		setFallbackStream($("#fallback-stream select").val());
 	})
 
 	$('#preview-stream-manual .form-control').on('change keyup paste', function(){
@@ -129,15 +129,11 @@ $(function() {
 var isUpdating = false;
 function updateStreamInfo() {
 	isUpdating = true;
-	remoteCall('fullStatus').done(function(reply){
-		if ( reply.status === 'success' ){
-			$("#live_data").html("Current stream: " + reply.data.live_target);
-			$("#preview_data").html("Current stream: " + reply.data.preview_target);
-			$("#fallback_stream").html("Current fallback: " + reply.data.fallback_target);
-			$('.published').toggle(reply.data.is_published !== 'no');
-		} else {
-			console.error("Remote error: ", reply)
-		}
+	remoteCall('fullStatus').done(function(data){
+		$("#live_data").html("Current stream: " + data.live_target);
+		$("#preview_data").html("Current stream: " + data.preview_target);
+		$("#fallback-stream .current").html("Current fallback: " + data.fallback_target);
+		$('.published').toggle(data.is_published !== 'no');
 	}).always(function(){
 		isUpdating = false;
 	});
@@ -172,13 +168,13 @@ function setFallbackStream(stream) {
 }
 
 function updateStreamList() {
-	var form = $('#preview-stream-list');
+	var form = $('.stream-list').parents('form');
 	form.addClass('loading');
 	form.removeClass('has-error');
-	form.find('.help-block').remove();
+	form.find('.help-block.error').remove();
 
 	remoteCall('getStreams').done(function(streams){
-		var list = $('#preview-stream-list select, #fallback_stream_list');
+		var list = $('.stream-list');
 		list.empty();
 
 		/* sort so actual streams comes first and VOD after */
@@ -194,12 +190,28 @@ function updateStreamList() {
 			}
 		});
 
-		$.each(streams, function(idx, stream) {
-			list.append("<option>"+stream+"</option>")
+		/* fill each list individually (can have different filters) */
+		list.each(function(){
+			var target = $(this);
+			var filter = target.data('filter');
+
+			/* first is always blank empty */
+			target.append('<option></option>');
+
+			$.each(streams, function(idx, stream) {
+				switch ( filter ){
+				case 'stream':
+					if ( stream.indexOf(':') >= 0 ) return;
+				default:
+					break;
+				}
+
+				target.append("<option>"+stream+"</option>")
+			});
 		});
 	}).fail(function(){
 		form.addClass('has-error');
-		form.append('<span class="help-block">Failed to update stream list, see console log for defaults.</span>');
+		form.append('<span class="help-block error">Failed to update stream list, see console log for defaults.</span>');
 	}).always(function(){
 		form.removeClass('loading');
 	});
