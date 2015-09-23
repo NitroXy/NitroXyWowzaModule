@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import com.torandi.net.command.Exposed;
 import com.torandi.net.command.JSONCommand;
 import com.wowza.wms.application.IApplicationInstance;
+import com.wowza.wms.livestreamrecord.manager.IStreamRecorder;
 import com.wowza.wms.livestreamrecord.manager.IStreamRecorderConstants;
 import com.wowza.wms.livestreamrecord.manager.StreamRecorderParameters;
 import com.wowza.wms.livestreamrecord.manager.StreamRecorderSimpleFileVersionDelegate;
@@ -133,12 +134,20 @@ public class ApplicationManager {
 	}
 	
 	@Exposed
-	public Map<String,String> fullStatus(){
-		Map<String,String> status = new Hashtable<String,String>();
+	public Map<String,Object> fullStatus(){
+		Map<String,Object> status = new Hashtable<String,Object>();
 		status.put("live_target", currentLive());
 		status.put("preview_target", currentPreview());
 		status.put("fallback_target", currentFallback());
 		status.put("is_published", isPublished() ? "yes" : "no");
+
+		/* get all current recordings */
+		Map<String,String> recordings = new Hashtable<String,String>();
+		for ( IStreamRecorder recorder: vhost.getLiveStreamRecordManager().getRecordersList(appInstance) ){
+			recordings.put(recorder.getStreamName(), recorder.getCurrentFile());
+		}
+		status.put("recording", recordings);
+
 		return status;
 	}
 	
