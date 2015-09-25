@@ -35,8 +35,12 @@ public class StreamSwitcher {
 		previewStream = Stream.createInstance(appInstance, config.settings.StreamSwitcher_previewStream);
 		
 		/* restore streams if possible */
-		playStream(previewStream, config.settings.StreamSwitcher_previewTarget);
-		playStream(liveStream, config.settings.StreamSwitcher_liveTarget);
+		if ( !playStream(previewStream, config.settings.StreamSwitcher_previewTarget) ){
+			realPreviewStream = config.settings.StreamSwitcher_previewTarget;
+		}
+		if ( !playStream(liveStream, config.settings.StreamSwitcher_liveTarget) ){
+			realLiveStream = config.settings.StreamSwitcher_liveTarget;
+		}
 	}
 	
 	public void close(){
@@ -120,10 +124,10 @@ public class StreamSwitcher {
 		return publisher != null;
 	}
 	
-	protected void playStream(Stream on, String stream) {
+	protected boolean playStream(Stream on, String stream) {
 		/* sanity check */
 		if ( stream == null || stream.equals("") ){
-			return;
+			return false;
 		}
 
 		if(on == liveStream) {
@@ -134,15 +138,18 @@ public class StreamSwitcher {
 			main.info("WHAT IS THIS CRAP?");
 		}
 		
+		main.info("Playing " + stream + " on " + on.getName() + " stream");
+		
+		boolean result = false;
 		if(stream.matches(".+:.+")) { // Detect file: "{type}:{filename}"
-			on.play(stream, 0, -1, true);
+			result = on.play(stream, 0, -1, true);
 			on.setRepeat(true);
 		} else {
-			on.play(stream, -2, -1, true);
+			result = on.play(stream, -2, -1, true);
 			on.setRepeat(false);
 		}
 
-		main.info("Playing " + stream + " on " + on.getName() + " stream");
+		return result;
 	}
 	
 	private void onPublish(String streamName) {
