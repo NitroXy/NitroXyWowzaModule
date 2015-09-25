@@ -101,8 +101,7 @@ public class JSONCommand<T> implements XStreamListener {
 		return;
 	}
 	
-	@Override
-	protected void finalize() throws Throwable {
+	public void close(){
 		logger.info("Shuting down JSON command interface");
 		socket.stopListen();
 		for(XSocket client : clients) {
@@ -111,7 +110,6 @@ public class JSONCommand<T> implements XStreamListener {
 			} catch (IOException e) {
 			}
 		}
-		super.finalize();
 	}
 
 	@Override

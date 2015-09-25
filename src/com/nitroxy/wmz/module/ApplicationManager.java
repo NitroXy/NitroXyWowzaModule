@@ -49,6 +49,7 @@ public class ApplicationManager {
 		}
 
 		stopRecording();
+		command.close();
 	}
 
 	protected void startRecording(){
