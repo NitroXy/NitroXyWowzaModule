@@ -160,19 +160,26 @@ public class StreamSwitcher {
 	
 	private void onUnPublish(String streamName) {
 		main.info("onUnPublish("+streamName+")");
+		streamName = streamName.trim();
+		
+		/* if no backup stream is set there is no need to do anything */
 		String backupStream = config.settings.StreamSwitcher_fallbackStream;
-		if(backupStream != null && !backupStream.equalsIgnoreCase(streamName)) {
-			if(streamName.trim().equalsIgnoreCase(config.settings.StreamSwitcher_liveTarget)) {
-				main.info("Live stream " + streamName + " went down. Switching to backup "+backupStream);
-				playStream(liveStream, backupStream);
-				realLiveStream = streamName;
-			}
-			
-			if(streamName.trim().equalsIgnoreCase(config.settings.StreamSwitcher_previewTarget)) {
-				main.info("Preview stream " + streamName + " went down. Switching to backup "+backupStream);
-				playStream(previewStream, backupStream);
-				realPreviewStream = streamName;
-			}
+		if ( backupStream == null || backupStream.equalsIgnoreCase(streamName) ){
+			return;
+		}
+		
+		/* record if live target went down */
+		if ( streamName.equalsIgnoreCase(config.settings.StreamSwitcher_liveTarget) ){
+			main.info("Live stream " + streamName + " went down. Switching to backup "+backupStream);
+			playStream(liveStream, backupStream);
+			realLiveStream = streamName;
+		}
+
+		/* record if preview target went down */
+		if ( streamName.equalsIgnoreCase(config.settings.StreamSwitcher_previewTarget) ){
+			main.info("Preview stream " + streamName + " went down. Switching to backup "+backupStream);
+			playStream(previewStream, backupStream);
+			realPreviewStream = streamName;
 		}
 	}
 	
