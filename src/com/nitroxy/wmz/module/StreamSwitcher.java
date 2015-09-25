@@ -65,6 +65,10 @@ public class StreamSwitcher {
 	protected String previewTarget(){
 		return config.settings.StreamSwitcher_previewTarget;
 	}
+	
+	protected String fallbackTarget(){
+		return config.settings.StreamSwitcher_fallbackStream;
+	}
 
 	public void startPushPublish() {
 		try {
@@ -185,7 +189,7 @@ public class StreamSwitcher {
 		streamName = streamName.trim();
 
 		/* if no backup stream is set there is no need to do anything */
-		String backupStream = config.settings.StreamSwitcher_fallbackStream;
+		String backupStream = fallbackTarget();
 		if ( backupStream == null || backupStream.equalsIgnoreCase(streamName) ){
 			return;
 		}
