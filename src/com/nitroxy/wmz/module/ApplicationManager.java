@@ -149,7 +149,7 @@ public class ApplicationManager {
 		status.put("live_target", currentLive());
 		status.put("preview_target", currentPreview());
 		status.put("fallback_target", currentFallback());
-		status.put("is_published", isPublished() ? "yes" : "no");
+		status.put("is_published", isPublished());
 
 		/* get all current recordings */
 		Map<String,String> recordings = new Hashtable<String,String>();

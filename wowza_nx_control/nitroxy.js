@@ -148,7 +148,7 @@ function updateStreamInfo() {
 		$("#live_data").html("Current stream: " + data.live_target);
 		$("#preview_data").html("Current stream: " + data.preview_target);
 		$("#fallback-stream .current").html("Current fallback: " + data.fallback_target);
-		$('.published').toggle(data.is_published !== 'no');
+		$('.published').toggle(data.is_published);
 	}).always(function(){
 		isUpdating = false;
 	});
