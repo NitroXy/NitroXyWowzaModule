@@ -96,7 +96,7 @@ public class StreamSwitcher {
 	}
 
 	/**
-	 * Set stream for preview export
+	 * Set stream for preview channel.
 	 * @param stream
 	 */
 	public void switchStream(String stream) {
@@ -108,7 +108,7 @@ public class StreamSwitcher {
 	}
 
 	/**
-	 * Copy settings from preview to live
+	 * Copy settings from preview to live.
 	 */
 	public void publishStream() {
 		config.settings.StreamSwitcher_liveTarget = previewTarget();
@@ -116,10 +116,6 @@ public class StreamSwitcher {
 
 		main.info("Published stream to live ("+liveTarget()+")");
 		playStream(liveStream, liveTarget());
-
-		if ( publisher == null ){
-			startPushPublish();
-		}
 	}
 
 	/**
@@ -128,6 +124,8 @@ public class StreamSwitcher {
 	public void republish() {
 		playStream(liveStream, liveTarget());
 		playStream(previewStream, previewTarget());
+		
+		/* restart publishing */
 		if(publisher == null) {
 			startPushPublish();
 		} else {

@@ -44,6 +44,7 @@ public class ApplicationManager {
 	}
 
 	public void stop() {
+		main.info("Stopping ApplicationManager");
 		if ( streamSwitcher != null ){
 			streamSwitcher.close();
 		}
@@ -53,6 +54,7 @@ public class ApplicationManager {
 	}
 
 	protected void startRecording(){
+		main.info("Starting stream recorder");
 		StreamRecorderParameters record = new StreamRecorderParameters(this.appInstance);
 		record.segmentationType = IStreamRecorderConstants.SEGMENT_NONE;
 		record.fileVersionDelegate = new StreamRecorderSimpleFileVersionDelegate();
@@ -60,6 +62,7 @@ public class ApplicationManager {
 	}
 	
 	protected void stopRecording(){
+		main.info("Stopping stream recorder");
 		vhost.getLiveStreamRecordManager().stopRecording(appInstance);
 	}
 
@@ -84,6 +87,12 @@ public class ApplicationManager {
 			return false;
 	}
 	
+	/**
+	 * Takes the stream currently on the preview channel and publishes to the
+	 * live channel.
+	 *
+	 * @return true if successful.
+	 */
 	@Exposed
 	public boolean publishStream() {
 		if(streamSwitcher != null) {
