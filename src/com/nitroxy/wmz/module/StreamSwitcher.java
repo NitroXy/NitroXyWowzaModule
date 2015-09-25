@@ -87,6 +87,14 @@ public class StreamSwitcher {
 		}
 	}
 
+	public void stopPushPublish() {
+		if(publisher != null) {
+			publisher.disconnect();
+			publisher = null;
+			main.info("Stopped push publishing");
+		}
+	}
+
 	/**
 	 * Set stream for preview export
 	 * @param stream
@@ -126,14 +134,6 @@ public class StreamSwitcher {
 			publisher.disconnect();
 			publisher = null;
 			startPushPublish();
-		}
-	}
-
-	public void stopPushPublish() {
-		if(publisher != null) {
-			publisher.disconnect();
-			publisher = null;
-			main.info("Stopped push publishing");
 		}
 	}
 
