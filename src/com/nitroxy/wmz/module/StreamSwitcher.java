@@ -71,16 +71,25 @@ public class StreamSwitcher {
 	public void startPushPublish() {
 		try {
 			publisher = new PushPublishRTMP();
+			
+			/* setup source parameters */
 			publisher.setAppInstance(appInstance);
 			publisher.setSrcStreamName(liveStreamName());
 
+			/* setup destination parameters */
 			publisher.setHostname(config.settings.pushPublish_Host);
 			publisher.setPort(config.settings.pushPublish_Port);
-
 			publisher.setDstApplicationName(config.settings.pushPublish_Application);
 			publisher.setDstStreamName(config.settings.pushPublish_Key);
-			publisher.setDebugLog(false);
+			publisher.setDstAppInstanceName("");
+			
+			/* setup connection parameters */
+			publisher.setSendFCPublish(true);
+			publisher.setSendOnMetadata(false);
+			publisher.setOnMetadataToSetDataFrame(true);
+			publisher.setDebugLog(true);
 			publisher.setImplementation(config.settings.pushPublish_Profile);
+			
 			publisher.connect();
 
 			main.info("Begun push publishing");
