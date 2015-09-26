@@ -63,7 +63,7 @@ public class StreamSwitcher {
 	protected String previewTarget(){
 		return config.settings.StreamSwitcher_previewTarget;
 	}
-	
+
 	protected String fallbackTarget(){
 		return config.settings.StreamSwitcher_fallbackStream;
 	}
@@ -126,15 +126,23 @@ public class StreamSwitcher {
 	public void republish() {
 		playStream(liveStream, liveTarget());
 		playStream(previewStream, previewTarget());
-		
-		/* restart publishing */
-		if(publisher == null) {
-			startPushPublish();
-		} else {
-			publisher.disconnect();
-			publisher = null;
-			startPushPublish();
-		}
+	}
+
+	/**
+	 * Stops all live broadcasting by directly switching to fallback streams
+	 * and if external publishing is enabled it is stopped.
+	 */
+	public void stopBroadcast() {
+		main.info("Stopping broadcast");
+
+		stopPushPublish();
+
+		config.settings.StreamSwitcher_previewTarget = fallbackTarget();
+		config.settings.StreamSwitcher_liveTarget = fallbackTarget();
+		config.save();
+
+		playStream(previewStream, fallbackTarget());
+		playStream(liveStream, fallbackTarget());
 	}
 
 	public boolean isPublished(){

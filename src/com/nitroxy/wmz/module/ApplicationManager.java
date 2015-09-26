@@ -24,9 +24,9 @@ public class ApplicationManager {
 	private NitroXyModule main;
 	private IApplicationInstance appInstance;
 	private IVHost vhost;
-	
+
 	JSONCommand<ApplicationManager> command;
-	
+
 	public ApplicationManager(NitroXyModule main, IApplicationInstance appInstance) throws LicensingException {
 		this.appInstance = appInstance;
 		this.main = main;
@@ -60,7 +60,7 @@ public class ApplicationManager {
 		record.fileVersionDelegate = new StreamRecorderSimpleFileVersionDelegate();
 		vhost.getLiveStreamRecordManager().startRecording(appInstance, record);
 	}
-	
+
 	protected void stopRecording(){
 		main.info("Stopping stream recorder");
 		vhost.getLiveStreamRecordManager().stopRecording(appInstance);
@@ -73,20 +73,53 @@ public class ApplicationManager {
 	protected String previewStreamName(){
 		return config.settings.StreamSwitcher_previewStream;
 	}
-	
-	public boolean enabled() {
+
+	protected boolean enabled() {
 		return config.exists();
 	}
-	
+
+
+	public void onStreamCreate(IMediaStream stream) {
+		if(streamSwitcher != null) streamSwitcher.onStreamCreate(stream);
+	}
+
+	protected boolean isPublished(){
+		if ( streamSwitcher != null ){
+			return streamSwitcher.isPublished();
+		} else {
+			return false;
+		}
+	}
+
+	protected String currentLive() {
+		return config.settings.StreamSwitcher_liveTarget;
+	}
+
+	protected String currentPreview() {
+		return config.settings.StreamSwitcher_previewTarget;
+	}
+
+
+	protected String currentFallback() {
+		return config.settings.StreamSwitcher_fallbackStream;
+	}
+
+	/**
+	 * Change source on preview channel.
+	 *
+	 * @param stream Source name
+	 * @return
+	 */
 	@Exposed
 	public boolean switchStream(String stream)  {
 		if(streamSwitcher != null) {
 			streamSwitcher.switchStream(stream);
 			return true;
-		} else
+		} else {
 			return false;
+		}
 	}
-	
+
 	/**
 	 * Takes the stream currently on the preview channel and publishes to the
 	 * live channel.
@@ -101,7 +134,24 @@ public class ApplicationManager {
 		} else
 			return false;
 	}
-	
+
+	/**
+	 * Control if live stream should be republished to external stream
+	 * (e.g. twitch)
+	 */
+	@Exposed
+	public boolean publishExternal(boolean state){
+		if ( streamSwitcher == null ) return false;
+
+		if ( state ){
+			streamSwitcher.startPushPublish();
+			return true;
+		} else {
+			streamSwitcher.stopPushPublish();
+			return false;
+		}
+	}
+
 	@Exposed
 	public ArrayList<String> getStreams() {
 		Pattern p = Pattern.compile("^\\[.+\\].+");
@@ -117,7 +167,7 @@ public class ApplicationManager {
 
 			streams.add(name);
 		}
-		
+
 		/* list content */
 		File contentDir = new File(appInstance.getStreamStorageDir());
 		for(final File fileEntry : contentDir.listFiles()) {
@@ -129,20 +179,16 @@ public class ApplicationManager {
 						|| ext.equalsIgnoreCase("m4v")) {
 					streams.add("mp4:"+fileEntry.getName());
 				} else if(ext.equalsIgnoreCase("flv")) {
-					streams.add("flv:"+fileEntry.getName());	
+					streams.add("flv:"+fileEntry.getName());
 				} else if(ext.equalsIgnoreCase("mp3")) {
-					streams.add("mp3:"+fileEntry.getName());	
+					streams.add("mp3:"+fileEntry.getName());
 				}
 			}
 		}
-		
+
 		return streams;
 	}
-	
-	public void onStreamCreate(IMediaStream stream) {
-		if(streamSwitcher != null) streamSwitcher.onStreamCreate(stream);
-	}
-	
+
 	@Exposed
 	public Map<String,Object> fullStatus(){
 		Map<String,Object> status = new Hashtable<String,Object>();
@@ -160,41 +206,18 @@ public class ApplicationManager {
 
 		return status;
 	}
-	
-	@Exposed
-	public String currentLive() {
-		return config.settings.StreamSwitcher_liveTarget;
-	}
-	
-	@Exposed
-	public String currentPreview() {
-		return config.settings.StreamSwitcher_previewTarget;
-	}
-	
+
 	@Exposed
 	public void setFallback(String fallbackStream) {
 		/* disable if an empty string is passed */
 		if ( fallbackStream.isEmpty() ){
 			fallbackStream = null;
 		}
-		
+
 		config.settings.StreamSwitcher_fallbackStream = fallbackStream;
 		config.save();
 	}
-	
-	@Exposed
-	public String currentFallback() {
-		return config.settings.StreamSwitcher_fallbackStream;
-	}
-	
-	public boolean isPublished(){
-		if ( streamSwitcher != null ){
-			return streamSwitcher.isPublished();
-		} else {
-			return false;
-		}
-	}
-	
+
 	@Exposed
 	public boolean restartBroadcast() {
 		if(streamSwitcher != null) {
@@ -203,17 +226,12 @@ public class ApplicationManager {
 		} else
 			return false;
 	}
-	
+
 	@Exposed
-	public void stopPushPublish() {
-		if(streamSwitcher != null)
-			streamSwitcher.stopPushPublish();
-	}
-	
-	@Exposed
-	public void startPushPublish() {
-		if(streamSwitcher != null)
-			streamSwitcher.stopPushPublish();
+	public void stopBroadcast() {
+		if(streamSwitcher != null) {
+			streamSwitcher.stopBroadcast();
+		}
 	}
 
 	@Exposed

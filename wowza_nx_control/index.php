@@ -25,6 +25,7 @@ function url_rtsp($stream){
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>NitroXy Media Control</title>
 		<link href="bootstrap.min.css" rel="stylesheet">
+		<link href="bootstrap-switch.min.css" rel="stylesheet">
 		<link rel="stylesheet" href="//releases.flowplayer.org/6.0.3/skin/functional.css">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 		<link href="style.css" rel="stylesheet">
@@ -119,6 +120,9 @@ function url_rtsp($stream){
 							<button type="button" id="stop-stream" class="btn btn-danger">
 								<span class="fa fa-fw fa-stop"></span> Stop broadcast
 							</button>
+
+							<h4>External publishing (Twitch)</h4>
+							<input type="checkbox" data-switch id="external-publish" />
 						</div>
 					</div>
 
@@ -190,6 +194,7 @@ function url_rtsp($stream){
 		</footer>
 
 		<script defer src="//releases.flowplayer.org/6.0.3/flowplayer.min.js"></script>
-		<script defer src="bootstrap.min.js"></script>
+		<script src="bootstrap.min.js"></script>
+		<script src="bootstrap-switch.min.js"></script>
 	</body>
 </html>

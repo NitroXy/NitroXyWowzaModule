@@ -1,6 +1,8 @@
 var error_count = 0;
 var update_timer;
 var error_timer;
+var update_interval = 10 * 1000;
+var error_interval = 60 * 1000;
 
 /**
  * Make async RPC call to the backend control. It returns a jQuery Deferred
@@ -42,126 +44,41 @@ function remoteCall(function_name /* args ...*/) {
 }
 
 /**
- * Makes a simple RPC call where first argument is always the function name and
- * the rest is passed as regular arguments. On success the stream info is
- * updated and on errors a generic error message is shown.
+ * Create a function wrapped around a remoteCall.
+ * E.g. wrapCall('foo') returns a function calling remoteCall('foo', args..)
  */
-function simpleCall(func /* args ... */){
-	remoteCall.apply(this, arguments).done(function(){
-		updateStreamInfo();
-	}).fail(function(){
-		alert("Warning, SwitchStream is not enabled on the server");
-	});
-}
-
-function wrapCall(func){
-	var args = arguments;
+function wrapCall(func, options){
+	var o = options || {};
 	return function(){
-		return remoteCall.apply(this, args);
+		var dfd = remoteCall.apply(this, [func].concat(Array.prototype.slice.call(arguments)));
+
+		if ( o.update ){
+			dfd.done(function(){
+				updateStreamInfo();
+			});
+		}
+
+		if ( o.error ){
+			dfd.fail(function(){
+				alert("Warning, SwitchStream is not enabled on the server");
+			});
+		}
+
+		return dfd;
 	};
 }
 
 /* "low"-level API access, this is the raw functions that is available on the server */
 var api = {};
-api.switchStream = wrapCall('switchStream');
-api.publishStream = wrapCall('publishStream');
-api.getStreams = wrapCall('getStreams');
-api.fullStatus = wrapCall('fullStatus');
-api.currentLive = wrapCall('currentLive');
-api.currentPreview = wrapCall('currentPreview');
-api.setFallback = wrapCall('setFallback');
-api.currentFallback = wrapCall('currentFallback');
-api.restartBroadcast = wrapCall('restartBroadcast');
-api.stopPushPublish = wrapCall('stopPushPublish');
-api.startPushPublish = wrapCall('startPushPublish');
-api.segment = wrapCall('segment');
-
-$(function() {
-	updateStreamInfo();
-	updateStreamList();
-
-	update_timer = setInterval(function(){
-		if ( !isUpdating ){
-			updateStreamInfo();
-		} else {
-			console.error('Update skipped because the previous request is still ongoing.');
-		}
-	}, 10000);
-
-	error_timer = setInterval(function(){
-		if ( error_count < 5 ){
-			error_count = 0;
-		} else {
-			console.error('Too many errors, bailing out');
-			$('#disconnected').show();
-			clearInterval(update_timer);
-			clearInterval(error_timer);
-		}
-	}, 60 * 1000);
-
-	$('form#preview-stream-list').submit(function(e){
-		e.preventDefault();
-		var control = $(this).find('.form-control');
-		var stream = control.val();
-		switchStream(stream);
-
-		/* reset name for manual control */
-		if ( control.attr('type') === 'text' ){
-			control.val('');
-		}
-	});
-
-	$("#publish").click(function(e) {
-		e.preventDefault();
-		publish();
-	})
-
-	$("#republish").click(function(e) {
-		e.preventDefault();
-		if(confirm("Are you sure you want to restart live broadcasting?")) {
-			restartBroadcast();
-		}
-	})
-
-	$("#stop-stream").click(function(e) {
-		e.preventDefault();
-		if(confirm("Are you sure you want to stop live broadcasting?")) {
-			stop();
-		}
-	})
-
-	$('button[data-action="refresh-streams"]').click(function(e) {
-		e.preventDefault();
-		updateStreamList();
-	})
-
-	$("form#fallback-stream").submit(function(e) {
-		e.preventDefault();
-		setFallbackStream($("#fallback-stream select").val());
-	})
-
-	$('#preview-stream-manual .form-control').on('change keyup paste', function(){
-		var group = $(this).parents('.form-group');
-		var submit = group.find('button');
-		var empty = $(this).val().length === 0;
-		submit.prop('disabled', empty);
-	}).change();
-
-	$('#segment-current').click(function(e){
-		e.preventDefault();
-		api.segment();
-	});
-
-	$('form#segment-stream').submit(function(e){
-		e.preventDefault();
-		var select = $(this).find('select');
-		var stream = select.val();
-		if ( stream ){
-			api.segment(stream);
-		}
-		select.val('');
-	});
-})
+api.switchStream = wrapCall('switchStream', {update: true, error: true});
+api.publishStream = wrapCall('publishStream', {update: true, error: true});
+api.publishExternal = wrapCall('publishExternal', {update: true, error: true});
+api.getStreams = wrapCall('getStreams', {update: false, error: true});
+api.fullStatus = wrapCall('fullStatus', {update: false, error: false});
+api.setFallback = wrapCall('setFallback', {update: true, error: true});
+api.restartBroadcast = wrapCall('restartBroadcast', {update: true, error: true});
+api.stopBroadcast = wrapCall('stopBroadcast', {update: true, error: true});
+api.segment = wrapCall('segment', {update: false, error: true});
 
 var isUpdating = false;
 function updateStreamInfo() {
@@ -171,6 +88,7 @@ function updateStreamInfo() {
 		$("#preview_data").html("Current stream: " + data.preview_target);
 		$("#fallback-stream .current").html("Current fallback: " + data.fallback_target);
 		$('.published').toggle(data.is_published);
+		$('input#external-publish').bootstrapSwitch('state', data.is_published);
 	}).always(function(){
 		isUpdating = false;
 	});
@@ -181,19 +99,7 @@ function switchStream(stream) {
 		alert("Can't change to empty stream");
 		return false;
 	}
-	simpleCall("switchStream", stream);
-}
-
-function publish() {
-	simpleCall("publishStream");
-}
-
-function restartBroadcast() {
-	simpleCall("restartBroadcast");
-}
-
-function stop() {
-	simpleCall("stopPushPublish");
+	api.switchStream(stream);
 }
 
 function setFallbackStream(stream) {
@@ -201,7 +107,7 @@ function setFallbackStream(stream) {
 		alert("Can't change to empty stream");
 		return false;
 	}
-	simpleCall("setFallback", stream);
+	api.setFallback(stream);
 }
 
 function updateStreamList() {
@@ -253,3 +159,99 @@ function updateStreamList() {
 		form.removeClass('loading');
 	});
 }
+
+$(function() {
+	updateStreamInfo();
+	updateStreamList();
+
+	update_timer = setInterval(function(){
+		if ( !isUpdating ){
+			updateStreamInfo();
+		} else {
+			console.error('Update skipped because the previous request is still ongoing.');
+		}
+	}, update_interval);
+
+	error_timer = setInterval(function(){
+		if ( error_count < 5 ){
+			error_count = 0;
+		} else {
+			console.error('Too many errors, bailing out');
+			$('#disconnected').show();
+			clearInterval(update_timer);
+			clearInterval(error_timer);
+		}
+	}, error_interval);
+
+	$('form#preview-stream-list').submit(function(e){
+		e.preventDefault();
+		var control = $(this).find('.form-control');
+		var stream = control.val();
+		switchStream(stream);
+
+		/* reset name for manual control */
+		if ( control.attr('type') === 'text' ){
+			control.val('');
+		}
+	});
+
+	$("#publish").click(function(e) {
+		e.preventDefault();
+		api.publishStream();
+	})
+
+	$("#republish").click(function(e) {
+		e.preventDefault();
+		if(confirm("Are you sure you want to restart live broadcasting?")) {
+			api.restartBroadcast();
+		}
+	})
+
+	$("#stop-stream").click(function(e) {
+		e.preventDefault();
+		if(confirm("Are you sure you want to stop live broadcasting?")) {
+			api.stopBroadcast();
+		}
+	})
+
+	$('button[data-action="refresh-streams"]').click(function(e) {
+		e.preventDefault();
+		updateStreamList();
+	})
+
+	$("form#fallback-stream").submit(function(e) {
+		e.preventDefault();
+		setFallbackStream($("#fallback-stream select").val());
+	})
+
+	$('#preview-stream-manual .form-control').on('change keyup paste', function(){
+		var group = $(this).parents('.form-group');
+		var submit = group.find('button');
+		var empty = $(this).val().length === 0;
+		submit.prop('disabled', empty);
+	}).change();
+
+	$('#segment-current').click(function(e){
+		e.preventDefault();
+		api.segment();
+	});
+
+	$('form#segment-stream').submit(function(e){
+		e.preventDefault();
+		var select = $(this).find('select');
+		var stream = select.val();
+		if ( stream ){
+			api.segment(stream);
+		}
+		select.val('');
+	});
+
+	$('input#external-publish').change(function(){
+		var on = $(this).prop('checked');
+		api.publishExternal(on);
+	});
+
+	$('input[data-switch]').bootstrapSwitch().on('switchChange.bootstrapSwitch', function(e, state){
+		$(this).prop('checked', state).change();
+	});
+})
