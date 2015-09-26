@@ -34,13 +34,11 @@ public class StreamSwitcher {
 		liveStream = Stream.createInstance(appInstance, liveStreamName());
 		previewStream = Stream.createInstance(appInstance, previewStreamName());
 
-		/* restore streams if possible */
-		if ( !playStream(previewStream, previewTarget()) ){
-			realPreviewStream = previewTarget();
-		}
-		if ( !playStream(liveStream, liveTarget()) ){
-			realLiveStream = liveTarget();
-		}
+		/* start by playing fallback stream and wait for onPublish callback to start actual playback */
+		playStream(previewStream, fallbackTarget());
+		playStream(liveStream, fallbackTarget());
+		realPreviewStream = previewTarget();
+		realLiveStream = liveTarget();
 	}
 
 	public void close(){
