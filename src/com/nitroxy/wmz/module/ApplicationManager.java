@@ -196,7 +196,7 @@ public class ApplicationManager {
 	}
 	
 	@Exposed
-	public boolean republish() {
+	public boolean restartBroadcast() {
 		if(streamSwitcher != null) {
 			streamSwitcher.republish();
 			return true;

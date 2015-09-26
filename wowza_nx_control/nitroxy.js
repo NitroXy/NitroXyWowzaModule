@@ -54,6 +54,28 @@ function simpleCall(func /* args ... */){
 	});
 }
 
+function wrapCall(func){
+	var args = arguments;
+	return function(){
+		return remoteCall.apply(this, args);
+	};
+}
+
+/* "low"-level API access, this is the raw functions that is available on the server */
+var api = {};
+api.switchStream = wrapCall('switchStream');
+api.publishStream = wrapCall('publishStream');
+api.getStreams = wrapCall('getStreams');
+api.fullStatus = wrapCall('fullStatus');
+api.currentLive = wrapCall('currentLive');
+api.currentPreview = wrapCall('currentPreview');
+api.setFallback = wrapCall('setFallback');
+api.currentFallback = wrapCall('currentFallback');
+api.restartBroadcast = wrapCall('restartBroadcast');
+api.stopPushPublish = wrapCall('stopPushPublish');
+api.startPushPublish = wrapCall('startPushPublish');
+api.segment = wrapCall('segment');
+
 $(function() {
 	updateStreamInfo();
 	updateStreamList();
@@ -97,7 +119,7 @@ $(function() {
 	$("#republish").click(function(e) {
 		e.preventDefault();
 		if(confirm("Are you sure you want to restart live broadcasting?")) {
-			republish();
+			restartBroadcast();
 		}
 	})
 
@@ -127,7 +149,7 @@ $(function() {
 
 	$('#segment-current').click(function(e){
 		e.preventDefault();
-		segmentStream();
+		api.segment();
 	});
 
 	$('form#segment-stream').submit(function(e){
@@ -135,7 +157,7 @@ $(function() {
 		var select = $(this).find('select');
 		var stream = select.val();
 		if ( stream ){
-			segmentStream(stream);
+			api.segment(stream);
 		}
 		select.val('');
 	});
@@ -144,7 +166,7 @@ $(function() {
 var isUpdating = false;
 function updateStreamInfo() {
 	isUpdating = true;
-	remoteCall('fullStatus').done(function(data){
+	api.fullStatus().done(function(data){
 		$("#live_data").html("Current stream: " + data.live_target);
 		$("#preview_data").html("Current stream: " + data.preview_target);
 		$("#fallback-stream .current").html("Current fallback: " + data.fallback_target);
@@ -162,16 +184,12 @@ function switchStream(stream) {
 	simpleCall("switchStream", stream);
 }
 
-function segmentStream(stream){
-	simpleCall('segment', stream || '');
-}
-
 function publish() {
 	simpleCall("publishStream");
 }
 
-function republish() {
-	simpleCall("republish");
+function restartBroadcast() {
+	simpleCall("restartBroadcast");
 }
 
 function stop() {
@@ -192,7 +210,7 @@ function updateStreamList() {
 	form.removeClass('has-error');
 	form.find('.help-block.error').remove();
 
-	remoteCall('getStreams').done(function(streams){
+	api.getStreams().done(function(streams){
 		var list = $('.stream-list');
 		list.empty();
 
