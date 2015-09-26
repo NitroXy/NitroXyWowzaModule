@@ -173,6 +173,11 @@ public class ApplicationManager {
 	
 	@Exposed
 	public void setFallback(String fallbackStream) {
+		/* disable if an empty string is passed */
+		if ( fallbackStream.isEmpty() ){
+			fallbackStream = null;
+		}
+		
 		config.settings.StreamSwitcher_fallbackStream = fallbackStream;
 		config.save();
 	}
