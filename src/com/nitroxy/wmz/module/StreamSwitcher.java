@@ -1,7 +1,16 @@
 package com.nitroxy.wmz.module;
 
+import java.io.OutputStream;
+
+import com.wowza.wms.amf.AMFDataItem;
+import com.wowza.wms.amf.AMFDataList;
+import com.wowza.wms.amf.AMFDataMixedArray;
+import com.wowza.wms.amf.AMFDataObj;
 import com.wowza.wms.application.IApplicationInstance;
+import com.wowza.wms.pushpublish.protocol.rtmp.IPushPublishRTMPNotify;
 import com.wowza.wms.pushpublish.protocol.rtmp.PushPublishRTMP;
+import com.wowza.wms.pushpublish.protocol.rtmp.PushPublishRTMPNetConnectionSession;
+import com.wowza.wms.request.RequestFunction;
 import com.wowza.wms.server.LicensingException;
 import com.wowza.wms.stream.IMediaStream;
 import com.wowza.wms.stream.IMediaStreamActionNotify;
@@ -85,12 +94,208 @@ public class StreamSwitcher {
 			
 			/* setup connection parameters */
 			publisher.setSendFCPublish(true);
-			publisher.setSendOnMetadata(false);
+			publisher.setSendOnMetadata(true);
 			publisher.setOnMetadataToSetDataFrame(true);
 			publisher.setDebugLog(true);
 			publisher.setImplementation(config.settings.pushPublish_Profile);
 			
+			publisher.addListener(new IPushPublishRTMPNotify() {
+
+				@Override
+				public void onAkamaiClientLogin(
+						PushPublishRTMPNetConnectionSession pushPublisherSession,
+						RequestFunction function, AMFDataList params) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void onAkamaiSetChallenge(
+						PushPublishRTMPNetConnectionSession pushPublisherSession,
+						RequestFunction function, AMFDataList params) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void onAkamaiSetOriginConnectionInfo(
+						PushPublishRTMPNetConnectionSession pushPublisherSession,
+						RequestFunction function, AMFDataList params) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void onConnect(
+						PushPublishRTMPNetConnectionSession pushPublisherSession,
+						RequestFunction function, AMFDataList params) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void onConnectFailure(
+						PushPublishRTMPNetConnectionSession pushPublisherSession) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void onConnectStart(
+						PushPublishRTMPNetConnectionSession pushPublisherSession) {
+					// TODO Auto-generated method stub
+					main.info("onConnectStart");
+					
+				}
+
+				@Override
+				public void onConnectSuccess(
+						PushPublishRTMPNetConnectionSession pushPublisherSession) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void onFCAnnounce(
+						PushPublishRTMPNetConnectionSession pushPublisherSession,
+						RequestFunction function, AMFDataList params) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void onFCPublish(
+						PushPublishRTMPNetConnectionSession pushPublisherSession,
+						RequestFunction function, AMFDataList params) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void onHandshakeResult(
+						PushPublishRTMPNetConnectionSession pushPublisherSession,
+						RequestFunction function, AMFDataList params) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void onPublishHandlerPlay(
+						PushPublishRTMPNetConnectionSession pushPublisherSession,
+						OutputStream out, long[] playSizes) {
+					// TODO Auto-generated method stub
+					//main.info("onPublishHandlerPlay");
+					
+				}
+
+				@Override
+				public void onPushPublisherSessionCreate(
+						PushPublishRTMPNetConnectionSession pushPublisherSession) {
+					// TODO Auto-generated method stub
+					main.info("onPushPublisherSessionCreate");
+				}
+
+				@Override
+				public void onPushPublisherSessionDestroy(
+						PushPublishRTMPNetConnectionSession pushPublisherSession) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void onReleaseStream(
+						PushPublishRTMPNetConnectionSession pushPublisherSession,
+						RequestFunction function, AMFDataList params) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void onSessionClosed(
+						PushPublishRTMPNetConnectionSession pushPublisherSession) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void onSessionIdle(
+						PushPublishRTMPNetConnectionSession pushPublisherSession) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void onSessionOpened(
+						PushPublishRTMPNetConnectionSession pushPublisherSession) {
+					// TODO Auto-generated method stub
+					
+					
+					main.info("onSessionOpened");
+				}
+
+				@Override
+				public void onStreamCreate(
+						PushPublishRTMPNetConnectionSession pushPublisherSession,
+						RequestFunction function, AMFDataList params) {
+					// TODO Auto-generated method stub
+					main.info("onStreamCreate");
+					
+					
+
+				}
+
+				@Override
+				public void onStreamOnPlayStatus(
+						PushPublishRTMPNetConnectionSession pushPublisherSession,
+						RequestFunction function, AMFDataList params) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void onStreamOnStatus(
+						PushPublishRTMPNetConnectionSession pushPublisherSession,
+						RequestFunction function, AMFDataList params) {
+					// TODO Auto-generated method stub
+					
+					main.info("onStreamOnStatus");
+					
+	                IMediaStream stream = appInstance.getStreams().getStream(liveStreamName());
+	                if (stream != null) {
+	                        AMFDataObj amfData = new AMFDataObj();
+	                        amfData.put("title", new AMFDataItem("NitroXy Live Stream"));
+	                        amfData.put("language", new AMFDataItem("Swedish"));
+	                         //stream.sendDirect("onMetaData", amfData);
+	                         stream.sendDirect("onMetadata", amfData);
+	                         main.info("onMetadata -> live injected");
+	                         
+	                         publisher.getSrcStream().sendDirect("onMetadata", amfData);
+	                         main.info("onMetadata -> publisher src stream injected");
+	                } else {
+	                	
+	                	main.info("could not find stream");
+	                }
+				}
+
+				@Override
+				public void onValidateSession(
+						PushPublishRTMPNetConnectionSession pushPublisherSession) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void onValidateSessionResult(
+						PushPublishRTMPNetConnectionSession pushPublisherSession,
+						boolean result) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
+			
 			publisher.connect();
+			
+
 
 			main.info("Begun push publishing");
 		} catch (LicensingException ex) {
