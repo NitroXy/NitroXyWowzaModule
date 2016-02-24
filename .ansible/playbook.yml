@@ -1,0 +1,37 @@
+---
+- hosts: all
+  sudo: true
+  vars:
+    username: admin
+    password: admin
+    wowza_version: 4.4.0
+  
+  tasks:
+    - name: Installing other utils
+      apt:
+        state: present
+        update_cache: yes
+        name:
+          - emacs-nox
+          - expect
+
+    - name: Installing JRE
+      apt:
+        state: present
+        name: openjdk-7-jre
+
+    - name: Download WowzaStreamingEngine {{ wowza_version }}
+      get_url:
+        url: https://www.wowza.com/downloads/WowzaStreamingEngine-{{ wowza_version | regex_replace('\.', '-') }}/WowzaStreamingEngine-{{ wowza_version }}-linux-x64-installer.run
+        dest: /home/vagrant/WowzaStreamingEngine-{{wowza_version }}-linux-x64-installer.run
+        sha256sum: 254187143e5ca88cf8ac0f4b59accef7c2d835aa9f6f219e2e271486155b24c5
+        mode: 0744
+
+    - name: Push installation script
+      template: src=wowza.exp.j2 dest=/home/vagrant/wowza.exp mode=0755
+      
+    - name: Run installation
+      command: /home/vagrant/wowza.exp
+      args:
+        chdir: /home/vagrant
+        creates: /usr/local/WowzaStreamingEngine/conf/Server.license
