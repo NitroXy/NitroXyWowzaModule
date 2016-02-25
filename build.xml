@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<project name="NitroxyWowzaModule" default="jar" basedir="..">
+<project name="NitroxyWowzaModule" default="jar" basedir=".">
 	
-	<property name="wowza.lib.dir" value="/usr/local/WowzaStreamingEngine/lib"/>
+	<property name="wowza.lib.dir" value="bin"/>
 	<property name="jar.filename" value="NitroxyWowzaModule.jar"/>
 	<property name="core.build.dir" value="bin"/>
 

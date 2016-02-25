@@ -17,10 +17,9 @@ Vagrant.configure(2) do |config|
   config.vm.network "forwarded_port", guest: 8086, host: 8086
   config.vm.network "forwarded_port", guest: 8087, host: 8087
   config.vm.network "forwarded_port", guest: 8088, host: 8088
-  #config.vm.synced_folder ".", "/vagrant"
+  config.vm.synced_folder ".", "/vagrant"
 
   config.vm.provision "ansible_local" do |ansible|
-    ansible.verbose   = "v"
     ansible.playbook  = ".ansible/playbook.yml"
     ansible.raw_arguments = "--extra-vars license='#{license}'"
   end

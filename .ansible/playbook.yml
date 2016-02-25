@@ -5,7 +5,8 @@
     username: admin
     password: admin
     wowza_version: 4.4.0
-  
+    dir: "/usr/local/WowzaStreamingEngine"
+
   tasks:
     - name: Installing other utils
       apt:
@@ -29,9 +30,31 @@
 
     - name: Push installation script
       template: src=wowza.exp.j2 dest=/home/vagrant/wowza.exp mode=0755
-      
+
     - name: Run installation
       command: /home/vagrant/wowza.exp
+      register: installed
       args:
         chdir: /home/vagrant
-        creates: /usr/local/WowzaStreamingEngine/conf/Server.license
+        creates: "{{ dir }}/conf/Server.license"
+
+    - name: Fixed borked directory permissions
+      command: find "{{ dir }}/" -type d -exec chmod 755 {} +
+      when: installed|changed
+
+    - name: Fixed borked file permissions
+      command: find "{{ dir }}/" -type f -regex '.*\.\(txt\|xml\|properties\|password\|access\|jar\|png\|so\|java\|ttf\|html\|js\|as\|pdf\|service\|desktop\|mo\|gif\|swf\|css\|user\|cs\|csproj\|fla\|mxml\|policy\|xaml\|db\|config\|dll\|war\|mp4\)' -exec chmod 644 {} +
+      when: installed|changed
+
+    - name: Symlink NitroXyWowzaModule.jar module
+      file:
+        path: "{{ dir }}/lib/NitroxyWowzaModule.jar"
+        src: "/vagrant/bin/NitroxyWowzaModule.jar"
+        state: link
+        force: yes
+
+    - name: Enable NitroXyWowzaModule
+      lineinfile:
+        dest: "{{ dir }}/conf/Server.xml"
+        line: '\t\t\t<ServerListener><BaseClass>com.nitroxy.wmz.module.ServerListener</BaseClass></ServerListener>'
+        insertbefore: '.*</ServerListeners>'
