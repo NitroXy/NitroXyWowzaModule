@@ -13,6 +13,7 @@ Vagrant.configure(2) do |config|
   config.vm.box = "debian/contrib-jessie64"
   config.vm.box_version = "8.3.0"
 
+  config.vm.network "forwarded_port", guest: 80,   host: 8080
   config.vm.network "forwarded_port", guest: 8083, host: 8083
   config.vm.network "forwarded_port", guest: 8086, host: 8086
   config.vm.network "forwarded_port", guest: 8087, host: 8087

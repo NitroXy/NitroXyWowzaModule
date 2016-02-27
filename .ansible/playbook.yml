@@ -21,6 +21,18 @@
         state: present
         name: openjdk-7-jre
 
+    - name: Installing LEMP stack (minus mysql)
+      apt:
+        state: present
+        name:
+          - nginx
+          - php5-fpm
+
+    - name: Installing JRE
+      apt:
+        state: present
+        name: openjdk-7-jre
+
     - name: Download WowzaStreamingEngine {{ wowza_version }}
       get_url:
         url: https://www.wowza.com/downloads/WowzaStreamingEngine-{{ wowza_version | regex_replace('\.', '-') }}/WowzaStreamingEngine-{{ wowza_version }}-linux-x64-installer.run
@@ -58,3 +70,45 @@
         dest: "{{ dir }}/conf/Server.xml"
         line: '\t\t\t<ServerListener><BaseClass>com.nitroxy.wmz.module.ServerListener</BaseClass></ServerListener>'
         insertbefore: '.*</ServerListeners>'
+
+    - name: 'PHP: Enable display_errors'
+      notify: restart php5-fpm
+      lineinfile: &php
+        dest: /etc/php5/fpm/php.ini
+        backrefs: yes
+        regexp: '(display_errors =) Off'
+        line: '\1 On'
+
+    - name: 'PHP: Set error_reporting'
+      notify: restart php5-fpm
+      lineinfile:
+        <<: *php
+        regexp: '(error_reporting =) E_ALL .+'
+        line: '\1 E_ALL'
+
+    - name: 'PHP: Set date.timezone'
+      notify: restart php5-fpm
+      lineinfile:
+        <<: *php
+        regexp: ';(date.timezone =)'
+        line: '\1 Europe/Stockholm'
+
+    - name: 'PHP: Set fix_pathinfo'
+      notify: restart php5-fpm
+      lineinfile:
+        <<: *php
+        regexp: ';(cgi.fix_pathinfo=).*'
+        line: '\1 0'
+
+    - name: Configure vhost
+      notify: restart nginx
+      template:
+        src: nginx.conf
+        dest: /etc/nginx/sites-available/default
+
+  handlers:
+    - name: restart nginx
+      service: name=nginx state=reloaded
+
+    - name: restart php5-fpm
+      service: name=php5-fpm state=reloaded
