@@ -1,14 +1,25 @@
 <?xml version="1.0"?>
-<project name="NitroxyWowzaModule" default="jar" basedir=".">
-	
-	<property name="wowza.lib.dir" value="bin"/>
+<project name="NitroxyWowzaModule" default="all" basedir=".">
+
 	<property name="jar.filename" value="NitroxyWowzaModule.jar"/>
-	<property name="core.build.dir" value="bin"/>
+	<property name="core.build.dir" value="build"/>
+	<property name="lib.dir" value="lib"/>
+
+	<target name="all" depends="compile, jar" />
+
+	<target name="compile">
+		<mkdir dir="${core.build.dir}"/>
+		<javac srcdir="src" destdir="${core.build.dir}" includeantruntime="false">
+			<classpath>
+				<fileset dir="${lib.dir}" includes="*.jar"/>
+			</classpath>
+		</javac>
+	</target>
 
 	<target name="jar">
-		<jar jarfile="${wowza.lib.dir}/${jar.filename}">
+		<jar jarfile="${jar.filename}">
 			<fileset dir="${core.build.dir}"/>
 		</jar>
 	</target>
-	
+
 </project>
