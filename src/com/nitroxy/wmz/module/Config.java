@@ -1,46 +1,34 @@
 package com.nitroxy.wmz.module;
 
 import java.io.File;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.io.IOException;
 import java.util.HashMap;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.wowza.wms.bootstrap.Bootstrap;
 
 public class Config {
-	@Target(value = ElementType.FIELD)
-	@Retention(value = RetentionPolicy.RUNTIME)
-	private static @interface Optional {
-	}
 	
 	public static class Settings {
-
-		@Optional
 		public String 	Control_Address = "localhost";
-		@Optional
 		public int 		Control_Port = 1337;
 		
-		@Optional
-		public boolean StreamSwitcher_Enabled = false;
-		public String StreamSwitcher_liveStream = null;
-		public String StreamSwitcher_previewStream = null;
-		@Optional
-		public String StreamSwitcher_liveTarget = null;
-		@Optional
-		public String StreamSwitcher_previewTarget = null;
-		@Optional
-		public String StreamSwitcher_fallbackStream = null;
+		public boolean StreamSwitcher_Enabled = true;
+		
+		public String StreamSwitcher_liveStream = "nitroxy";
+		public String StreamSwitcher_liveTarget = "";
+		public String StreamSwitcher_previewStream = "preview";
+		public String StreamSwitcher_previewTarget = "";
+		public String StreamSwitcher_fallbackStream = "mp4:downtime.mp4";
 
 		public String pushPublish_Host = null;
-		@Optional
-		public int pushPublish_Port = 1935;
+		public int    pushPublish_Port = 1935;
 		public String pushPublish_Profile = null;
 		public String pushPublish_Key = null;
 		public String pushPublish_Application = null;
-
 	}
 	
 	public final String applicationName;
@@ -93,9 +81,13 @@ public class Config {
 	private void load() {
 		try {
 			settings = mapper.readValue(new File(fileName), Settings.class);
-		} catch (Exception e) {
+		} catch (JsonParseException | JsonMappingException e) {
 			log.error("Internal error when reflecting on Settings: "+e.getMessage());
+			e.printStackTrace();
 			exists = false;
+		} catch (IOException e) {
+			log.error("Loading defaults");
+			settings = new Settings();
 		}
 	}
 	

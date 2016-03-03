@@ -230,6 +230,13 @@ public class ApplicationManager {
 	@Exposed(method="GET", url="status")
 	public Map<String,Object> fullStatus(){
 		Map<String,Object> status = new Hashtable<String,Object>();
+		
+		if ( !(config.exists() && config.settings.StreamSwitcher_Enabled) ){
+			status.put("enabled", false);
+			return status;
+		}
+
+		status.put("enabled", true);
 		status.put("live_target", currentLive());
 		status.put("preview_target", currentPreview());
 		status.put("fallback_target", currentFallback());
