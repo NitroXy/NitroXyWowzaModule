@@ -40,6 +40,8 @@ function url_rtsp($stream){
 			</div>
 			<h1>NitroXy media control</h1>
 
+			<div id="messages"></div>
+
 			<div class="row vertical-align">
 				<div class="col-sm-5 col-sm-push-6 live">
 					<div class="inner">

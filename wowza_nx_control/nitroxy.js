@@ -64,8 +64,16 @@
 			}
 
 			if ( o.error ){
-				dfd.fail(function(){
-					alert("Warning, SwitchStream is not enabled on the server");
+				dfd.fail(function(data){
+					$('#messages').append(
+						'<div class="alert alert-danger alert-dismissable role="alert">' +
+							'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+							'Remote call failed: ' + data.error + '<br/>' +
+							'Callstack:<br/><pre>' +
+							JSON.stringify(data.stacktrace, null, 2) +
+							'</pre>' +
+						'</div>'
+					);
 				});
 			}
 
