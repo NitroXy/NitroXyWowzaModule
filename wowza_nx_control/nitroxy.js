@@ -11,20 +11,17 @@
 	 * Make async RPC call to the backend control. It returns a jQuery Deferred
 	 * object (quite similar to $.ajax)
 	 */
-	function remoteCall(function_name /* args ...*/){
+	function remoteCall(function_name, method /* args ...*/){
 		var dfd = $.Deferred();
-		var args = jQuery.makeArray(arguments).slice(1);
+		var args = jQuery.makeArray(arguments).slice(2);
 
 		try {
 			$.ajax({
-				url: 'backend.php',
-				type: 'POST',
+				url: '/api/' + function_name,
+				type: method,
 				contentType: 'application/json',
 				processData: false,
-				data: JSON.stringify({
-					'function': function_name,
-					'args': args,
-				}),
+				data: args.length > 0 ? JSON.stringify(args) : undefined,
 			}).done(function(reply){
 				if ( reply.status === 'success' ){
 					dfd.resolve(reply.data);
@@ -51,9 +48,15 @@
 	 * E.g. wrapCall('foo') returns a function calling remoteCall('foo', args..)
 	 */
 	function wrapCall(func, options){
-		var o = options || {};
+		var defaults = {
+			update: true,
+			error: true,
+			method: 'POST',
+		};
+		var o = $.extend({}, defaults, options || {});
+
 		return function(){
-			var dfd = remoteCall.apply(this, [func].concat(Array.prototype.slice.call(arguments)));
+			var dfd = remoteCall.apply(this, [func, o.method].concat(Array.prototype.slice.call(arguments)));
 
 			if ( o.update ){
 				dfd.done(function(){
@@ -76,8 +79,8 @@
 	api.switchStream = wrapCall('switchStream', {update: true, error: true});
 	api.publishStream = wrapCall('publishStream', {update: true, error: true});
 	api.publishExternal = wrapCall('publishExternal', {update: true, error: true});
-	api.getStreams = wrapCall('getStreams', {update: false, error: true});
-	api.fullStatus = wrapCall('fullStatus', {update: false, error: false});
+	api.getStreams = wrapCall('streams', {method: 'GET', update: false, error: true});
+	api.fullStatus = wrapCall('status', {method: 'GET', update: false, error: false});
 	api.setFallback = wrapCall('setFallback', {update: true, error: true});
 	api.restartBroadcast = wrapCall('restartBroadcast', {update: true, error: true});
 	api.stopBroadcast = wrapCall('stopBroadcast', {update: true, error: true});
