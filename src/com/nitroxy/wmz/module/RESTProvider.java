@@ -11,6 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.wowza.wms.application.IApplication;
 import com.wowza.wms.application.IApplicationInstance;
 import com.wowza.wms.http.HTTPServerVersion;
@@ -66,6 +67,7 @@ public class RESTProvider extends HTTProvider2Base {
 		
 		final ObjectMapper mapper = new ObjectMapper();
 		final Map<String,Object> reply = new HashMap<String,Object>();
+		mapper.enable(SerializationFeature.INDENT_OUTPUT);
 		resp.setHeader("Content-Type", "application/json");
 		
 		/* generate reply */
@@ -78,10 +80,21 @@ public class RESTProvider extends HTTProvider2Base {
 		} catch (IllegalAccessException e){
 			resp.setResponseCode(404);
 			reply.put("status", "error");
+		} catch (InvocationTargetException e) {
+			Throwable ei = e.getCause();
+			if ( ei == null ) ei = e.getTargetException();
+			if ( ei == null ) ei = e;
+			log.error("HTTPProviderStreamReset.onHTTPRequest: "+ei.toString());
+			e.printStackTrace();
+			reply.put("status", "error");
+			reply.put("error", ei.getMessage());
+			reply.put("stacktrace", ei.getStackTrace());
 		} catch (Exception e) {
 			log.error("HTTPProviderStreamReset.onHTTPRequest: "+e.toString());
 			e.printStackTrace();
 			reply.put("status", "error");
+			reply.put("error", e.getMessage());
+			reply.put("stacktrace", e.getStackTrace());
 		}
 		
 		/* try to reply */

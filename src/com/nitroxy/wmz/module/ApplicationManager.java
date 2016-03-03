@@ -227,7 +227,7 @@ public class ApplicationManager {
 		return streams;
 	}
 
-	//@Exposed
+	@Exposed(method="GET", url="status")
 	public Map<String,Object> fullStatus(){
 		Map<String,Object> status = new Hashtable<String,Object>();
 		status.put("live_target", currentLive());
