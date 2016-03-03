@@ -1,13 +1,14 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-unless File.exist?('server.license')
+license_filename = File.dirname(__FILE__) + '/server.license'
+unless File.exist?(license_filename)
   puts "`server.license' is missing, create a textfile with the license key."
   puts "E.g. echo 'license_key: xxxxx-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxx' > server.license"
   exit(1)
 end
 
-license = File.read('server.license')
+license = File.read(license_filename)
 
 Vagrant.configure(2) do |config|
   config.vm.box = "debian/contrib-jessie64"
