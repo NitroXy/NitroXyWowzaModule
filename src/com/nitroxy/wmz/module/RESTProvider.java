@@ -64,15 +64,31 @@ public class RESTProvider extends HTTProvider2Base {
 			return;
 		}
 		
+		final ObjectMapper mapper = new ObjectMapper();
+		final Map<String,Object> reply = new HashMap<String,Object>();
+		resp.setHeader("Content-Type", "application/json");
+		
+		/* generate reply */
 		try {
 			final Object result = handleRequest(mngr, req);
-			final ObjectMapper mapper = new ObjectMapper(); // create once, reuse
-			final String string = mapper.writeValueAsString(result);
-			final OutputStream out = resp.getOutputStream();
-			resp.setHeader("Content-Type", "application/json");
-			out.write(string.getBytes());
+			reply.put("status", "success");
+			if ( result != null ){
+				reply.put("data", result);
+			}
 		} catch (IllegalAccessException e){
 			resp.setResponseCode(404);
+			reply.put("status", "error");
+		} catch (Exception e) {
+			log.error("HTTPProviderStreamReset.onHTTPRequest: "+e.toString());
+			e.printStackTrace();
+			reply.put("status", "error");
+		}
+		
+		/* try to reply */
+		try {
+			final String string = mapper.writeValueAsString(reply);
+			final OutputStream out = resp.getOutputStream();
+			out.write(string.getBytes());
 		} catch (Exception e) {
 			log.error("HTTPProviderStreamReset.onHTTPRequest: "+e.toString());
 			e.printStackTrace();
