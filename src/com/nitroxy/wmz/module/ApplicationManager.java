@@ -1,20 +1,21 @@
 package com.nitroxy.wmz.module;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.torandi.net.command.Exposed;
-import com.torandi.net.command.JSONCommand;
 import com.wowza.wms.application.IApplicationInstance;
 import com.wowza.wms.livestreamrecord.manager.IStreamRecorder;
 import com.wowza.wms.livestreamrecord.manager.IStreamRecorderConstants;
 import com.wowza.wms.livestreamrecord.manager.StreamRecorderParameters;
 import com.wowza.wms.livestreamrecord.manager.StreamRecorderSimpleFileVersionDelegate;
-import com.wowza.wms.server.LicensingException;
 import com.wowza.wms.stream.IMediaStream;
 import com.wowza.wms.vhost.IVHost;
 
@@ -24,10 +25,9 @@ public class ApplicationManager {
 	private NitroXyModule main;
 	private IApplicationInstance appInstance;
 	private IVHost vhost;
+	private Map<String,Method> routing = new HashMap<String, Method>();
 
-	JSONCommand<ApplicationManager> command;
-
-	public ApplicationManager(NitroXyModule main, IApplicationInstance appInstance) throws LicensingException {
+	public ApplicationManager(NitroXyModule main, IApplicationInstance appInstance) {
 		this.appInstance = appInstance;
 		this.main = main;
 		this.vhost = appInstance.getVHost();
@@ -37,10 +37,47 @@ public class ApplicationManager {
 			if(config.settings.StreamSwitcher_Enabled) {
 				streamSwitcher = new StreamSwitcher(main, appInstance, config);
 			}
-			command = new JSONCommand<ApplicationManager>(main, this, config.settings.Control_Address, config.settings.Control_Port);
 		}
-
+		
+		loadRouting();
 		startRecording();
+	}
+	
+	protected void loadRouting(){
+		for (Method method : this.getClass().getMethods()) {
+			final Exposed exposed = method.getAnnotation(Exposed.class);
+			if ( exposed == null) continue;
+			
+			final String url = exposed.url().isEmpty() ? method.getName() : exposed.url();
+			final String entry = exposed.method() + ":/" + url;
+			
+			if (routing.put(entry, method) != null) {
+				main.error("Duplicate route " + entry + " in class " + this.getClass().getName());
+			}
+		}
+	}
+	
+	public Object routeRequest(String http_method, String url, Map<String,String> args) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException{
+		/* find matching method */
+		final String entry = http_method + ":" + url;
+		Method method = routing.get(entry);
+		if ( method == null ){
+			throw new IllegalAccessException("No such route exposed");
+		}
+		
+		/* map named arguments to positional */
+		Parameter parameters[] = method.getParameters();
+		Object mapped_args[] = new Object[parameters.length];
+		for ( int i=0; i < parameters.length; ++i ) {
+			final String argname = parameters[i].getName();
+			if ( !args.containsKey(argname) ){
+				throw new IllegalArgumentException("Missing argument " + argname);
+			}
+			mapped_args[i] = args.get(argname);
+		}
+		
+		/* invoke method with arguments */
+		return method.invoke(this, mapped_args);
 	}
 
 	public void stop() {
@@ -50,7 +87,7 @@ public class ApplicationManager {
 		}
 
 		stopRecording();
-		command.close();
+		main.info("ApplicationManager stoppped");
 	}
 
 	protected void startRecording(){
@@ -64,6 +101,7 @@ public class ApplicationManager {
 	protected void stopRecording(){
 		main.info("Stopping stream recorder");
 		vhost.getLiveStreamRecordManager().stopRecording(appInstance);
+		main.info("Stream recorder stopped");
 	}
 
 	protected String liveStreamName(){
@@ -110,7 +148,7 @@ public class ApplicationManager {
 	 * @param stream Source name
 	 * @return
 	 */
-	@Exposed
+	//@Exposed
 	public boolean switchStream(String stream)  {
 		if(streamSwitcher != null) {
 			streamSwitcher.switchStream(stream);
@@ -126,7 +164,7 @@ public class ApplicationManager {
 	 *
 	 * @return true if successful.
 	 */
-	@Exposed
+	//@Exposed
 	public boolean publishStream() {
 		if(streamSwitcher != null) {
 			streamSwitcher.publishStream();
@@ -139,7 +177,7 @@ public class ApplicationManager {
 	 * Control if live stream should be republished to external stream
 	 * (e.g. twitch)
 	 */
-	@Exposed
+	//@Exposed
 	public boolean publishExternal(boolean state){
 		if ( streamSwitcher == null ) return false;
 
@@ -152,7 +190,7 @@ public class ApplicationManager {
 		}
 	}
 
-	@Exposed
+	@Exposed(method="GET", url="streams")
 	public ArrayList<String> getStreams() {
 		Pattern p = Pattern.compile("^\\[.+\\].+");
 
@@ -189,7 +227,7 @@ public class ApplicationManager {
 		return streams;
 	}
 
-	@Exposed
+	//@Exposed
 	public Map<String,Object> fullStatus(){
 		Map<String,Object> status = new Hashtable<String,Object>();
 		status.put("live_target", currentLive());
@@ -207,7 +245,7 @@ public class ApplicationManager {
 		return status;
 	}
 
-	@Exposed
+	//@Exposed
 	public void setFallback(String fallbackStream) {
 		/* disable if an empty string is passed */
 		if ( fallbackStream.isEmpty() ){
@@ -218,7 +256,7 @@ public class ApplicationManager {
 		config.save();
 	}
 
-	@Exposed
+	//@Exposed
 	public boolean restartBroadcast() {
 		if(streamSwitcher != null) {
 			streamSwitcher.republish();
@@ -227,14 +265,14 @@ public class ApplicationManager {
 			return false;
 	}
 
-	@Exposed
+	//@Exposed
 	public void stopBroadcast() {
 		if(streamSwitcher != null) {
 			streamSwitcher.stopBroadcast();
 		}
 	}
 
-	@Exposed
+	//@Exposed
 	public boolean segment(){
 		main.info("Segmenting live stream recording - " + currentLive());
 		vhost.getLiveStreamRecordManager().splitRecording(appInstance, currentLive());

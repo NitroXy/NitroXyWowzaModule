@@ -5,7 +5,11 @@
 	<property name="core.build.dir" value="build"/>
 	<property name="lib.dir" value="lib"/>
 
-	<target name="all" depends="compile, jar" />
+	<target name="all" depends="dependencies, compile, jar" />
+	
+	<target name="dependencies">
+		<get src="http://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.7.2/jackson-databind-2.7.2.jar" dest="${lib.dir}" skipexisting="true" />
+	</target>
 
 	<target name="compile">
 		<mkdir dir="${core.build.dir}"/>

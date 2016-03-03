@@ -2,7 +2,6 @@ package com.nitroxy.wmz.module;
 
 import java.util.HashMap;
 
-import com.torandi.net.Logger;
 import com.wowza.wms.application.*;
 import com.wowza.wms.amf.*;
 import com.wowza.wms.client.*;
@@ -27,6 +26,12 @@ public class NitroXyModule extends ModuleBase implements Logger {
 		if ( mngr != null ){
 			mngr.stop();
 		}
+		
+		info("NitroXyModule::onAppStop finished");
+	}
+	
+	public ApplicationManager getManager(IApplicationInstance appInstance){
+		return managers.get(appInstance);
 	}
 
 	public void onConnect(IClient client, RequestFunction function,

@@ -2,5 +2,7 @@
 /.project
 /.settings
 /.vagrant
-/bin
+/NitroxyWowzaModule.jar
+/build
+/lib
 /server.license
