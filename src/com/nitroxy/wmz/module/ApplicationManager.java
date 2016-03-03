@@ -148,10 +148,10 @@ public class ApplicationManager {
 	 * @param stream Source name
 	 * @return
 	 */
-	//@Exposed
-	public boolean switchStream(String stream)  {
+	@Exposed(method="POST", url="stream")
+	public boolean switchStream(String name)  {
 		if(streamSwitcher != null) {
-			streamSwitcher.switchStream(stream);
+			streamSwitcher.switchStream(name);
 			return true;
 		} else {
 			return false;

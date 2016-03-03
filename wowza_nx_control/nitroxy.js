@@ -11,9 +11,8 @@
 	 * Make async RPC call to the backend control. It returns a jQuery Deferred
 	 * object (quite similar to $.ajax)
 	 */
-	function remoteCall(function_name, method /* args ...*/){
+	function remoteCall(function_name, method, args){
 		var dfd = $.Deferred();
-		var args = jQuery.makeArray(arguments).slice(2);
 
 		try {
 			$.ajax({
@@ -21,7 +20,7 @@
 				type: method,
 				contentType: 'application/json',
 				processData: false,
-				data: args.length > 0 ? JSON.stringify(args) : undefined,
+				data: typeof(args) !== 'undefined' ? JSON.stringify(args) : undefined,
 			}).done(function(reply){
 				if ( reply.status === 'success' ){
 					dfd.resolve(reply.data);
@@ -55,8 +54,8 @@
 		};
 		var o = $.extend({}, defaults, options || {});
 
-		return function(){
-			var dfd = remoteCall.apply(this, [func, o.method].concat(Array.prototype.slice.call(arguments)));
+		return function(args){
+			var dfd = remoteCall.call(this, func, o.method, args);
 
 			if ( o.update ){
 				dfd.done(function(){
@@ -76,7 +75,7 @@
 
 	/* "low"-level API access, this is the raw functions that is available on the server */
 	var api = {};
-	api.switchStream = wrapCall('switchStream', {update: true, error: true});
+	api.switchStream = wrapCall('stream', {update: true, error: true});
 	api.publishStream = wrapCall('publishStream', {update: true, error: true});
 	api.publishExternal = wrapCall('publishExternal', {update: true, error: true});
 	api.getStreams = wrapCall('streams', {method: 'GET', update: false, error: true});
@@ -105,7 +104,7 @@
 			alert("Can't change to empty stream");
 			return;
 		}
-		api.switchStream(stream);
+		api.switchStream({name: stream});
 	}
 
 	function setFallbackStream(stream){

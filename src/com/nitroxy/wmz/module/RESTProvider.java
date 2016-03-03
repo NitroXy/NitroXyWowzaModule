@@ -1,17 +1,24 @@
 package com.nitroxy.wmz.module;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.nitroxy.wmz.module.Config.Settings;
 import com.wowza.wms.application.IApplication;
 import com.wowza.wms.application.IApplicationInstance;
 import com.wowza.wms.http.HTTPServerVersion;
@@ -108,11 +115,28 @@ public class RESTProvider extends HTTProvider2Base {
 		}
 	}
 	
-	protected Object handleRequest(ApplicationManager mngr, IHTTPRequest req) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	protected Object handleRequest(ApplicationManager mngr, IHTTPRequest req) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, JsonParseException, JsonMappingException, IOException {
 		final String method = req.getMethod().toUpperCase();
+		WMSLogger log = WMSLoggerFactory.getLogger(HTTPServerVersion.class);
+		Map<String,String> args = null;
 		
-		if ( method.equals("POST")) {
-			req.parseBodyForParams(true);
+		if ( method.equals("POST") ) {
+			if ( req.getContentType().equals("application/json") ){
+				/* parse body instead of form data */
+				final ObjectMapper mapper = new ObjectMapper();
+				InputStream io = req.getInputStream();
+				TypeReference<HashMap<String,Object>> typeRef = new TypeReference<HashMap<String,Object>>() {};
+				args  = mapper.readValue(io, typeRef);
+			} else {
+				/* Flatten parameter array, multiple arguments with same name is not supported here */
+				req.parseBodyForParams(true);
+				args = new HashMap<String,String>();
+				Map<String,List<String>> parameters = req.getParameterMap();
+				for ( Entry<String, List<String>> entry : parameters.entrySet() ){
+					log.info(entry.getKey());
+					args.put(entry.getKey(), entry.getValue().get(0));
+				}
+			}
 		}
 		
 		///@TODO Find a better way to extract the local portion of the url ("<RequestFilers>foobar*</RequestFilters>")
@@ -120,17 +144,10 @@ public class RESTProvider extends HTTProvider2Base {
 		if ( !matcher.matches() ){
 			throw new IllegalArgumentException("Failed to match url");
 		}
-		
-		/* Flatten parameter array, multiple arguments with same name is not supported here */
-		Map<String,List<String>> parameters = req.getParameterMap();
-		Map<String,String> flat = new HashMap<String,String>();
-		for ( Entry<String, List<String>> entry : parameters.entrySet() ){
-			flat.put(entry.getKey(), entry.getValue().get(0));
-		}
 
 		/* Let ApplicationManager dispatch this request */
 		String url = matcher.group(1);
-		return mngr.routeRequest(method, url, flat);
+		return mngr.routeRequest(method, url, args);
 	}
 
 	protected void exitError(int code, String message, IHTTPResponse resp){
