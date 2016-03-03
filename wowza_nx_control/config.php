@@ -5,7 +5,7 @@ $config = [
 	 * IP or hostname to the RTMP stream.
 	 * Default assumes RTMP is running on the same machine.
 	 */
-	'rtmp_host' => $_SERVER['HTTP_HOST'],
+	'rtmp_host' => preg_replace('/:.*/', '', $_SERVER['HTTP_HOST']),
 
 	/**
 	 * Stream names.
