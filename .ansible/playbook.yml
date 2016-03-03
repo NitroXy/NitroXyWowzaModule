@@ -15,6 +15,7 @@
         name:
           - emacs-nox
           - expect
+          - rsync
 
     - name: Installing JRE
       apt:
@@ -61,15 +62,26 @@
     - name: Symlink NitroXyWowzaModule.jar module
       file:
         path: "{{ dir }}/lib/NitroxyWowzaModule.jar"
-        src: "/vagrant/bin/NitroxyWowzaModule.jar"
+        src: "/vagrant/NitroxyWowzaModule.jar"
         state: link
         force: yes
 
-    - name: Enable NitroXyWowzaModule
+    - name: Enable NitroXyWowzaModule ServerListener
       lineinfile:
         dest: "{{ dir }}/conf/Server.xml"
         line: '\t\t\t<ServerListener><BaseClass>com.nitroxy.wmz.module.ServerListener</BaseClass></ServerListener>'
         insertbefore: '.*</ServerListeners>'
+
+    - name: Enable NitroXyWowzaModule in application
+      lineinfile:
+        dest: "{{ dir }}/conf/Application.xml"
+        line: '\t\t\t<Module><Name>NitroXyModule</Name><Description>NitroXy stream control module</Description><Class>com.nitroxy.wmz.module.NitroXyModule</Class></Module>'
+        insertbefore: '.*</Modules>'
+
+    - name: Copying jars to shared folder for building
+      synchronize:
+        src: "{{ dir }}/lib/"
+        dest: "/vagrant/lib"
 
     - name: 'PHP: Enable display_errors'
       notify: restart php5-fpm
