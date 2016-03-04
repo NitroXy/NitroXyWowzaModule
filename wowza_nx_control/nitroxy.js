@@ -91,8 +91,8 @@
 	/* "low"-level API access, this is the raw functions that is available on the server */
 	var api = {};
 	api.switchStream = wrapCall('stream/switch', {update: true, error: true});
-	api.publishStream = wrapCall('publish', {update: true, error: true});
-	api.publishExternal = wrapCall('stream/push', {update: true, error: true});
+	api.publishStream = wrapCall('stream/push', {update: true, error: true});
+	api.publishExternal = wrapCall('publish', {update: true, error: true});
 	api.getStreams = wrapCall('streams', {method: 'GET', update: false, error: true});
 	api.fullStatus = wrapCall('status', {method: 'GET', update: false, error: false});
 	api.setFallback = wrapCall('stream/fallback', {update: true, error: true});

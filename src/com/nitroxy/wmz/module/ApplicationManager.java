@@ -167,7 +167,7 @@ public class ApplicationManager {
 	 *
 	 * @return true if successful.
 	 */
-	@Exposed(method="POST", url="publish")
+	@Exposed(method="POST", url="stream/push")
 	public boolean publishStream() {
 		if(streamSwitcher != null) {
 			streamSwitcher.publishStream();
@@ -180,7 +180,7 @@ public class ApplicationManager {
 	 * Control if live stream should be republished to external stream
 	 * (e.g. twitch)
 	 */
-	@Exposed(method="POST", url="stream/push")
+	@Exposed(method="POST", url="publish")
 	public boolean publishExternal(boolean state){
 		if ( streamSwitcher == null ) return false;
 

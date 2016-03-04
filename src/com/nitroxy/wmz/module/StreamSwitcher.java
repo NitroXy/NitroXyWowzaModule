@@ -68,7 +68,11 @@ public class StreamSwitcher {
 		return config.settings.StreamSwitcher_fallbackStream;
 	}
 
-	public void startPushPublish() {
+	public void startPushPublish() throws RuntimeException {
+		if ( config.settings.pushPublish_Host == null ){
+			throw new RuntimeException("pushPublish is not configured on the server");
+		}
+		
 		try {
 			publisher = new PushPublishRTMP();
 			
