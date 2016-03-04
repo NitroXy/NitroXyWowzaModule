@@ -83,15 +83,15 @@
 
 	/* "low"-level API access, this is the raw functions that is available on the server */
 	var api = {};
-	api.switchStream = wrapCall('stream', {update: true, error: true});
-	api.publishStream = wrapCall('publishStream', {update: true, error: true});
-	api.publishExternal = wrapCall('publishExternal', {update: true, error: true});
+	api.switchStream = wrapCall('stream/switch', {update: true, error: true});
+	api.publishStream = wrapCall('stream/publish', {update: true, error: true});
+	api.publishExternal = wrapCall('stream/push', {update: true, error: true});
 	api.getStreams = wrapCall('streams', {method: 'GET', update: false, error: true});
 	api.fullStatus = wrapCall('status', {method: 'GET', update: false, error: false});
-	api.setFallback = wrapCall('setFallback', {update: true, error: true});
-	api.restartBroadcast = wrapCall('restartBroadcast', {update: true, error: true});
-	api.stopBroadcast = wrapCall('stopBroadcast', {update: true, error: true});
-	api.segment = wrapCall('segment', {update: false, error: true});
+	api.setFallback = wrapCall('stream/fallback', {update: true, error: true});
+	api.restartBroadcast = wrapCall('stream/restart', {update: true, error: true});
+	api.stopBroadcast = wrapCall('stream/stop', {update: true, error: true});
+	api.segment = wrapCall('stream/segment', {update: false, error: true});
 
 	var isUpdating = false;
 	function updateStreamInfo(){
@@ -120,7 +120,7 @@
 			alert("Can't change to empty stream");
 			return;
 		}
-		api.setFallback(stream);
+		api.setFallback({name: stream});
 	}
 
 	function updateStreamList(){
@@ -291,7 +291,7 @@
 
 		$('input#external-publish').change(function(){
 			var on = $(this).prop('checked');
-			api.publishExternal(on);
+			api.publishExternal({state: on});
 		});
 
 		$('input[data-switch]').bootstrapSwitch().on('switchChange.bootstrapSwitch', function(e, state){

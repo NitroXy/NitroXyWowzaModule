@@ -42,8 +42,8 @@ public class RESTProvider extends HTTProvider2Base {
 	@Override
 	public void onHTTPRequest(IVHost vhost, IHTTPRequest req, IHTTPResponse resp) {
 		WMSLogger log = WMSLoggerFactory.getLogger(HTTPServerVersion.class);
-		log.info("request");
-		
+		log.info("HTTP " + req.getMethod().toUpperCase() + " " + req.getPath());
+
 		final IApplication app = vhost.getApplication("nitroxy");
 		if ( app == null ){
 			log.error("Failed to find nitroxy application");
@@ -114,19 +114,21 @@ public class RESTProvider extends HTTProvider2Base {
 			e.printStackTrace();
 		}
 	}
-	
+
 	protected Object handleRequest(ApplicationManager mngr, IHTTPRequest req) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, JsonParseException, JsonMappingException, IOException {
 		final String method = req.getMethod().toUpperCase();
 		WMSLogger log = WMSLoggerFactory.getLogger(HTTPServerVersion.class);
 		Map<String,String> args = null;
-		
+
 		if ( method.equals("POST") ) {
-			if ( req.getContentType().equals("application/json") ){
+			if ( req.getContentType().equals("application/json") ) {
 				/* parse body instead of form data */
-				final ObjectMapper mapper = new ObjectMapper();
-				InputStream io = req.getInputStream();
-				TypeReference<HashMap<String,Object>> typeRef = new TypeReference<HashMap<String,Object>>() {};
-				args  = mapper.readValue(io, typeRef);
+				if ( req.getContentLength() > 0 ){
+					final ObjectMapper mapper = new ObjectMapper();
+					InputStream io = req.getInputStream();
+					TypeReference<HashMap<String,Object>> typeRef = new TypeReference<HashMap<String,Object>>() {};
+					args  = mapper.readValue(io, typeRef);
+				}
 			} else {
 				/* Flatten parameter array, multiple arguments with same name is not supported here */
 				req.parseBodyForParams(true);

@@ -148,7 +148,7 @@ public class ApplicationManager {
 	 * @param stream Source name
 	 * @return
 	 */
-	@Exposed(method="POST", url="stream")
+	@Exposed(method="POST", url="stream/switch")
 	public boolean switchStream(String name)  {
 		if(streamSwitcher != null) {
 			streamSwitcher.switchStream(name);
@@ -164,7 +164,7 @@ public class ApplicationManager {
 	 *
 	 * @return true if successful.
 	 */
-	//@Exposed
+	@Exposed(method="POST", url="stream/publish")
 	public boolean publishStream() {
 		if(streamSwitcher != null) {
 			streamSwitcher.publishStream();
@@ -177,7 +177,7 @@ public class ApplicationManager {
 	 * Control if live stream should be republished to external stream
 	 * (e.g. twitch)
 	 */
-	//@Exposed
+	@Exposed(method="POST", url="stream/push")
 	public boolean publishExternal(boolean state){
 		if ( streamSwitcher == null ) return false;
 
@@ -252,18 +252,18 @@ public class ApplicationManager {
 		return status;
 	}
 
-	//@Exposed
-	public void setFallback(String fallbackStream) {
+	@Exposed(method="POST", url="stream/fallback")
+	public void setFallback(String name) {
 		/* disable if an empty string is passed */
-		if ( fallbackStream.isEmpty() ){
-			fallbackStream = null;
+		if ( name.isEmpty() ){
+			name = null;
 		}
 
-		config.settings.StreamSwitcher_fallbackStream = fallbackStream;
+		config.settings.StreamSwitcher_fallbackStream = name;
 		config.save();
 	}
 
-	//@Exposed
+	@Exposed(method="POST", url="stream/restart")
 	public boolean restartBroadcast() {
 		if(streamSwitcher != null) {
 			streamSwitcher.republish();
@@ -272,14 +272,14 @@ public class ApplicationManager {
 			return false;
 	}
 
-	//@Exposed
+	@Exposed(method="POST", url="stream/stop")
 	public void stopBroadcast() {
 		if(streamSwitcher != null) {
 			streamSwitcher.stopBroadcast();
 		}
 	}
 
-	//@Exposed
+	@Exposed(method="POST", url="stream/segment")
 	public boolean segment(){
 		main.info("Segmenting live stream recording - " + currentLive());
 		vhost.getLiveStreamRecordManager().splitRecording(appInstance, currentLive());
