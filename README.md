@@ -139,7 +139,19 @@ Restarts all streams and publishing.
 
 Stops all streams and publishing.
 
-### `POST /api/stream/segment`
+### `POST /api/recording`
+
+Enable/disable automatic stream recording.
+
+parameters:
+
+```
+{
+  state: BOOLEAN,
+}
+```
+
+### `POST /api/recording/segment`
 
 Instructs the stream recorder to finalize and move to a new segment.
 

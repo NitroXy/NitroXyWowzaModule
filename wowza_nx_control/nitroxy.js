@@ -13,10 +13,11 @@
 	 */
 	function remoteCall(function_name, method, args){
 		var dfd = $.Deferred();
+		var url = '/api/' + function_name;
 
 		try {
 			$.ajax({
-				url: '/api/' + function_name,
+				url: url,
 				type: method,
 				contentType: 'application/json',
 				processData: false,
@@ -31,7 +32,10 @@
 			}).error(function(reply){
 				error_count++;
 				console.error("Remote error: ", reply.responseJSON || reply.responseText);
-				dfd.reject(reply);
+				dfd.reject({
+					status: 'error',
+					error: url + ' - ' + reply.statusText,
+				});
 			});
 		} catch (e){
 			error_count++;
@@ -65,12 +69,15 @@
 
 			if ( o.error ){
 				dfd.fail(function(data){
+					console.log(data);
 					$('#messages').append(
 						'<div class="alert alert-danger alert-dismissable role="alert">' +
 							'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
 							'Remote call failed: ' + data.error + '<br/>' +
-							'Callstack:<br/><pre>' +
-							JSON.stringify(data.stacktrace, null, 2) +
+							(typeof(data.stracktrace) != 'undefined' ?
+							 'Callstack:<br/><pre>' +
+							 JSON.stringify(data.stacktrace, null, 2)
+							 : '') +
 							'</pre>' +
 						'</div>'
 					);
@@ -91,7 +98,10 @@
 	api.setFallback = wrapCall('stream/fallback', {update: true, error: true});
 	api.restartBroadcast = wrapCall('stream/restart', {update: true, error: true});
 	api.stopBroadcast = wrapCall('stream/stop', {update: true, error: true});
-	api.segment = wrapCall('stream/segment', {update: false, error: true});
+	api.recording = {
+		toggle:  wrapCall('recording', {update: true, error: true}),
+		segment: wrapCall('recording/segment', {update: false, error: true}),
+	};
 
 	var isUpdating = false;
 	function updateStreamInfo(){
@@ -102,6 +112,7 @@
 			$("#fallback-stream .current").html("Current fallback: " + data.fallback_target);
 			$('.published').toggle(data.is_published);
 			$('input#external-publish').bootstrapSwitch('state', data.is_published);
+			$('input#auto-recording').bootstrapSwitch('state', data.auto_recording);
 		}).always(function(){
 			isUpdating = false;
 		});
@@ -276,7 +287,7 @@
 
 		$('#segment-current').click(function(e){
 			e.preventDefault();
-			api.segment();
+			api.recording.segment();
 		});
 
 		$('form#segment-stream').submit(function(e){
@@ -284,7 +295,7 @@
 			var select = $(this).find('select');
 			var stream = select.val();
 			if ( stream ){
-				api.segment(stream);
+				api.recording.segment({stream: stream});
 			}
 			select.val('');
 		});
@@ -292,6 +303,11 @@
 		$('input#external-publish').change(function(){
 			var on = $(this).prop('checked');
 			api.publishExternal({state: on});
+		});
+
+		$('input#auto-recording').change(function(){
+			var on = $(this).prop('checked');
+			api.recording.toggle({state: on});
 		});
 
 		$('input[data-switch]').bootstrapSwitch().on('switchChange.bootstrapSwitch', function(e, state){

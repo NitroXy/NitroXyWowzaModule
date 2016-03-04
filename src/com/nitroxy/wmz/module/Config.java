@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -17,13 +18,14 @@ public class Config {
 		public int 		Control_Port = 1337;
 		
 		public boolean StreamSwitcher_Enabled = true;
+		public boolean StreamSwitcher_autoRecord = true;
 		
-		public String StreamSwitcher_liveStream = "nitroxy";
+		public String StreamSwitcher_liveStream = "live";
 		public String StreamSwitcher_liveTarget = "";
 		public String StreamSwitcher_previewStream = "preview";
 		public String StreamSwitcher_previewTarget = "";
 		public String StreamSwitcher_fallbackStream = "mp4:downtime.mp4";
-
+		
 		public String pushPublish_Host = null;
 		public int    pushPublish_Port = 1935;
 		public String pushPublish_Profile = null;
@@ -80,6 +82,7 @@ public class Config {
 	
 	private void load() {
 		try {
+			mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 			settings = mapper.readValue(new File(fileName), Settings.class);
 		} catch (JsonParseException | JsonMappingException e) {
 			log.error("Internal error when reflecting on Settings: "+e.getMessage());

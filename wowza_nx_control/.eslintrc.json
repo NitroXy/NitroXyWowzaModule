@@ -22,7 +22,6 @@
     "eol-last": 2,
     "eqeqeq": [2, "smart"],
     "indent": [2, "tab"],
-    "key-spacing": [2, {"beforeColon": false, "afterColon": true}],
     "linebreak-style": [2, "unix"],
     "max-depth": [1, 4],
     "max-params": [1, 4],

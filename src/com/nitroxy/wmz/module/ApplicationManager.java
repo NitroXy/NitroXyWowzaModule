@@ -31,16 +31,19 @@ public class ApplicationManager {
 		this.appInstance = appInstance;
 		this.main = main;
 		this.vhost = appInstance.getVHost();
-
+		
+		loadRouting();
+		
 		config = Config.getConfig(appInstance.getApplication().getName(), main);
 		if(config.exists()) {
 			if(config.settings.StreamSwitcher_Enabled) {
 				streamSwitcher = new StreamSwitcher(main, appInstance, config);
 			}
+			
+			if ( config.settings.StreamSwitcher_autoRecord ) {
+				startRecording();
+			}
 		}
-		
-		loadRouting();
-		startRecording();
 	}
 	
 	protected void loadRouting(){
@@ -237,6 +240,7 @@ public class ApplicationManager {
 		}
 
 		status.put("enabled", true);
+		status.put("auto_recording", config.settings.StreamSwitcher_autoRecord);
 		status.put("live_target", currentLive());
 		status.put("preview_target", currentPreview());
 		status.put("fallback_target", currentFallback());
@@ -279,7 +283,13 @@ public class ApplicationManager {
 		}
 	}
 
-	@Exposed(method="POST", url="stream/segment")
+	@Exposed(method="POST", url="recording")
+	public void toggleRecording(boolean state){
+		config.settings.StreamSwitcher_autoRecord = state;
+		config.save();
+	}
+
+	@Exposed(method="POST", url="recording/segment")
 	public boolean segment(){
 		main.info("Segmenting live stream recording - " + currentLive());
 		vhost.getLiveStreamRecordManager().splitRecording(appInstance, currentLive());
