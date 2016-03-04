@@ -20,21 +20,18 @@
         name:
           - emacs-nox
 
-    - name: Symlink NitroXyWowzaModule.jar module
+    - name: Wowza - Symlink NitroXyWowzaModule.jar module
       file:
         path: "{{ dir }}/lib/NitroxyWowzaModule.jar"
         src: "/vagrant/NitroxyWowzaModule.jar"
         state: link
         force: yes
 
-    - name: Enable NitroXyWowzaModule ServerListener
-      lineinfile:
-        dest: "{{ dir }}/conf/Server.xml"
-        line: '\t\t\t<ServerListener><BaseClass>com.nitroxy.wmz.module.ServerListener</BaseClass></ServerListener>'
-        insertbefore: '.*</ServerListeners>'
-
-    - name: Enable NitroXyWowzaModule in application
-      lineinfile:
-        dest: "{{ dir }}/conf/Application.xml"
-        line: '\t\t\t<Module><Name>NitroXyModule</Name><Description>NitroXy stream control module</Description><Class>com.nitroxy.wmz.module.NitroXyModule</Class></Module>'
-        insertbefore: '.*</Modules>'
+    - name: Wowza - Applying configuration
+      template:
+        src: "wowza/{{ item }}"
+        dest: "{{ dir }}/conf/{{ item }}"
+      with_items:
+        - Server.xml
+        - VHost.xml
+        - nitroxy/Application.xml
