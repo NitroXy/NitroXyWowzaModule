@@ -7,56 +7,18 @@
     wowza_version: 4.4.0
     dir: "/usr/local/WowzaStreamingEngine"
 
+  roles:
+    - web
+    - wowza
+
   tasks:
     - name: Installing other utils
       apt:
         state: present
         update_cache: yes
+        cache_valid_time: 86400
         name:
           - emacs-nox
-          - expect
-          - rsync
-
-    - name: Installing JRE
-      apt:
-        state: present
-        name: openjdk-7-jre
-
-    - name: Installing nginx
-      apt:
-        state: present
-        name:
-          - nginx
-
-    - name: Installing JRE
-      apt:
-        state: present
-        name: openjdk-7-jre
-
-    - name: Download WowzaStreamingEngine {{ wowza_version }}
-      get_url:
-        url: https://www.wowza.com/downloads/WowzaStreamingEngine-{{ wowza_version | regex_replace('\.', '-') }}/WowzaStreamingEngine-{{ wowza_version }}-linux-x64-installer.run
-        dest: /home/vagrant/WowzaStreamingEngine-{{wowza_version }}-linux-x64-installer.run
-        sha256sum: 254187143e5ca88cf8ac0f4b59accef7c2d835aa9f6f219e2e271486155b24c5
-        mode: 0744
-
-    - name: Push installation script
-      template: src=wowza.exp.j2 dest=/home/vagrant/wowza.exp mode=0755
-
-    - name: Run installation
-      command: /home/vagrant/wowza.exp
-      register: installed
-      args:
-        chdir: /home/vagrant
-        creates: "{{ dir }}/conf/Server.license"
-
-    - name: Fixed borked directory permissions
-      command: find "{{ dir }}/" -type d -exec chmod 755 {} +
-      when: installed|changed
-
-    - name: Fixed borked file permissions
-      command: find "{{ dir }}/" -type f -regex '.*\.\(txt\|xml\|properties\|password\|access\|jar\|png\|so\|java\|ttf\|html\|js\|as\|pdf\|service\|desktop\|mo\|gif\|swf\|css\|user\|cs\|csproj\|fla\|mxml\|policy\|xaml\|db\|config\|dll\|war\|mp4\)' -exec chmod 644 {} +
-      when: installed|changed
 
     - name: Symlink NitroXyWowzaModule.jar module
       file:
@@ -76,18 +38,3 @@
         dest: "{{ dir }}/conf/Application.xml"
         line: '\t\t\t<Module><Name>NitroXyModule</Name><Description>NitroXy stream control module</Description><Class>com.nitroxy.wmz.module.NitroXyModule</Class></Module>'
         insertbefore: '.*</Modules>'
-
-    - name: Copying jars to shared folder for building
-      synchronize:
-        src: "{{ dir }}/lib/"
-        dest: "/vagrant/lib"
-
-    - name: Configure vhost
-      notify: restart nginx
-      template:
-        src: nginx.conf
-        dest: /etc/nginx/sites-available/default
-
-  handlers:
-    - name: restart nginx
-      service: name=nginx state=reloaded
