@@ -319,5 +319,7 @@
 				$(this).text(url(stream));
 			});
 		}
+
+		$(".player").flowplayer();
 	});
 })();

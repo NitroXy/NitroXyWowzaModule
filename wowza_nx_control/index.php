@@ -25,7 +25,7 @@
 				<div class="col-sm-5 col-sm-push-6 live">
 					<div class="inner">
 						<h2>Live <span class="published fa fa-circle"></span></h2>
-						<div class="flowplayer" data-live="true">
+						<div class="player" data-live="true">
 							<video data-title="Live stream">
 								<source type="application/x-mpegurl" data-hls-src="live">
 							</video>
@@ -45,7 +45,7 @@
 				<div class="col-sm-5 col-sm-pull-6  preview">
 					<div class="inner">
 						<h2>Preview</h2>
-						<div class="flowplayer" data-live="true">
+						<div class="player" data-live="true">
 							<video data-title="Preview stream">
 								<source type="application/x-mpegurl" data-hls-src="preview">
 							</video>
