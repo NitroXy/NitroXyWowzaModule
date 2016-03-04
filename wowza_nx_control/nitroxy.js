@@ -176,6 +176,33 @@
 		});
 	}
 
+	function template(str, data){
+		return str.replace(/{([a-z_]+)}/g, function(_, key){
+			return data[key];
+		});
+	}
+
+	function url_dash(stream){
+		return template("http://{rtmp_host}:1935/nitroxy/{stream}/manifest.mpd", {
+			rtmp_host: window.location.hostname,
+			stream: stream,
+		});
+	}
+
+	function url_hls(stream){
+		return template("http://{rtmp_host}:1935/nitroxy/{stream}/playlist.m3u8", {
+			rtmp_host: window.location.hostname,
+			stream: stream,
+		});
+	}
+
+	function url_rtsp(stream){
+		return template("rtsp://{rtmp_host}:1935/nitroxy/{stream}", {
+			rtmp_host: window.location.hostname,
+			stream: stream,
+		});
+	}
+
 	$(function(){
 		updateStreamInfo();
 		updateStreamList();
@@ -270,5 +297,27 @@
 		$('input[data-switch]').bootstrapSwitch().on('switchChange.bootstrapSwitch', function(e, state){
 			$(this).prop('checked', state).change();
 		});
+
+		var data_url = {
+			'dash': url_dash,
+			'hls': url_hls,
+			'rtsp': url_rtsp,
+		};
+
+		for ( var key in data_url ){
+			var url = data_url[key];
+			$('[data-' + key + '-src]').each(function(){
+				var stream = $(this).data(key + '-src');
+				$(this).attr('src', url(stream));
+			});
+			$('[data-' + key + '-href]').each(function(){
+				var stream = $(this).data(key + '-href');
+				$(this).attr('href', url(stream));
+			});
+			$('[data-' + key + '-text]').each(function(){
+				var stream = $(this).data(key + '-text');
+				$(this).text(url(stream));
+			});
+		}
 	});
 })();

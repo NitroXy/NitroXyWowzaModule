@@ -1,22 +1,3 @@
-<?php require('config.php'); ?>
-<?php
-
-function url_dash($stream){
-	global $config;
-	return "http://{$config['rtmp_host']}:1935/nitroxy/{$stream}/manifest.mpd";
-}
-
-function url_hls($stream){
-	global $config;
-	return "http://{$config['rtmp_host']}:1935/nitroxy/{$stream}/playlist.m3u8";
-}
-
-function url_rtsp($stream){
-	global $config;
-	return "rtsp://{$config['rtmp_host']}:1935/nitroxy/{$stream}";
-}
-
-?>
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -48,7 +29,7 @@ function url_rtsp($stream){
 						<h2>Live <span class="published fa fa-circle"></span></h2>
 						<div class="flowplayer" data-live="true">
 							<video data-title="Live stream">
-								<source type="application/x-mpegurl" src="<?=url_hls($config['live_stream'])?>">
+								<source type="application/x-mpegurl" data-hls-src="live">
 							</video>
 						</div>
 						<div id="live_data"></div>
@@ -68,7 +49,7 @@ function url_rtsp($stream){
 						<h2>Preview</h2>
 						<div class="flowplayer" data-live="true">
 							<video data-title="Preview stream">
-								<source type="application/x-mpegurl" src="<?=url_hls($config['preview_stream'])?>">
+								<source type="application/x-mpegurl" data-hls-src="preview">
 							</video>
 						</div>
 						<div id="preview_data"></div>
@@ -178,18 +159,18 @@ function url_rtsp($stream){
 				<div class="col-md-5">
 					<h4>Preview</h4>
 					<dl class="dl-horizontal">
-						<dt>DASH</dt><dd><a href="<?=url_dash($config['preview_stream']);?>"><?=url_dash($config['preview_stream']);?></a></dd>
-						<dt>HLS</dt><dd><a href="<?=url_hls($config['preview_stream']);?>"><?=url_hls($config['preview_stream']);?></a></dd>
-						<dt>RTSP</dt><dd><a href="<?=url_rtsp($config['preview_stream']);?>"><?=url_rtsp($config['preview_stream']);?></a></dd>
+						<dt>DASH</dt><dd><a data-dash-href="preview" data-dash-text="preview"></a></dd>
+						<dt>HLS</dt><dd><a data-hls-href="preview" data-hls-text="preview"></a></dd>
+						<dt>RTSP</dt><dd><a data-rtsp-href="preview" data-rtsp-text="preview"></a></dd>
 					</dl>
 				</div>
 				<div class="col-md-1"></div>
 				<div class="col-md-5">
 					<h4>Live</h4>
 					<dl class="dl-horizontal">
-						<dt>DASH</dt><dd><a href="<?=url_dash($config['live_stream']);?>"><?=url_dash($config['live_stream']);?></a></dd>
-						<dt>HLS</dt><dd><a href="<?=url_hls($config['live_stream']);?>"><?=url_hls($config['live_stream']);?></a></dd>
-						<dt>RTSP</dt><dd><a href="<?=url_rtsp($config['live_stream']);?>"><?=url_rtsp($config['live_stream']);?></a></dd>
+						<dt>DASH</dt><dd><a data-dash-href="live" data-dash-text="live"></a></dd>
+						<dt>HLS</dt><dd><a data-hls-href="live" data-hls-text="live"></a></dd>
+						<dt>RTSP</dt><dd><a data-rtsp-href="live" data-rtsp-text="live"></a></dd>
 					</dl>
 				</div>
 			</div>
