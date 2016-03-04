@@ -164,7 +164,7 @@ public class ApplicationManager {
 	 *
 	 * @return true if successful.
 	 */
-	@Exposed(method="POST", url="stream/publish")
+	@Exposed(method="POST", url="publish")
 	public boolean publishStream() {
 		if(streamSwitcher != null) {
 			streamSwitcher.publishStream();
