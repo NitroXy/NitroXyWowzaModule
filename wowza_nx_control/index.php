@@ -7,7 +7,7 @@
 		<title>NitroXy Media Control</title>
 		<link href="bootstrap.min.css" rel="stylesheet">
 		<link href="bootstrap-switch.min.css" rel="stylesheet">
-		<link rel="stylesheet" href="//releases.flowplayer.org/6.0.3/skin/functional.css">
+		<link rel="stylesheet" href="//releases.flowplayer.org/6.0.5/skin/functional.css">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 		<link href="style.css" rel="stylesheet">
 		<script src="jquery.min.js"></script>
@@ -176,7 +176,7 @@
 			</div>
 		</footer>
 
-		<script defer src="//releases.flowplayer.org/6.0.3/flowplayer.min.js"></script>
+		<script defer src="//releases.flowplayer.org/6.0.5/flowplayer.min.js"></script>
 		<script src="bootstrap.min.js"></script>
 		<script src="bootstrap-switch.min.js"></script>
 	</body>
