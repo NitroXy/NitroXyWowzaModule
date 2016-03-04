@@ -60,6 +60,101 @@ Package: com.nitroxy.wmz.module
 Name: NitroXyModule
 5. Also ensure the java compatibility level is at least 1.6 (it is stored both globally for eclipse and per project)
 
+REST API
+--------
+
+Parameters is preferably passed as `application/json` in the POST body.
+
+All responses are wrapped in the following wrapper:
+
+```
+{
+  "status": "success" | "error",
+  "data": ...
+}
+```
+
+For errors `error` and `stacktrace` is present and `data` may not be present.
+
+### `GET /api/streams`
+
+Fetches list of available stream sources, both live and VOD.
+
+returns:
+
+`[NAME...]`
+
+### `GET /api/status`
+
+Fetches current system status.
+
+returns:
+
+```
+{
+  "enabled": BOOLEAN,
+  "live_target": STREAM,
+  "preview_target", STREAM,
+  "fallback_target", STREAM,
+  "is_published", BOOLEAN
+  "recording": [STREAM...]
+}
+```
+
+If `enabled` is false no other fields is present and means that the module is disabled on the server.
+
+### `POST /api/stream/switch`
+
+Changes the source stream of the preview target.
+
+parameters:
+
+```
+{
+  stream: NAME
+}
+```
+
+### `POST /api/stream/push`
+
+Changes the source stream of the live target to match the preview target.
+
+### `POST /api/stream/fallback`
+
+Changes the fallback stream (the stream switched to when the real stream goes down).
+
+parameters:
+
+```
+{
+  stream: NAME
+}
+```
+
+### `POST /api/stream/restart`
+
+Restarts all streams and publishing.
+
+### `POST /api/stream/stop`
+
+Stops all streams and publishing.
+
+### `POST /api/stream/segment`
+
+Instructs the stream recorder to finalize and move to a new segment.
+
+### `POST /api/publish` - 
+
+Start/stops external publishing (e.g. to twitch)
+
+parameters:
+
+```
+{
+  state: BOOLEAN
+}
+```
+
 Version history
 ---------------
 
