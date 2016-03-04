@@ -10,8 +10,6 @@
 		<link rel="stylesheet" href="//releases.flowplayer.org/6.0.5/skin/functional.css">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 		<link href="style.css" rel="stylesheet">
-		<script src="jquery.min.js"></script>
-		<script type='text/javascript' src="nitroxy.js"></script>
 	</head>
 	<body>
 		<div class="container-fluid" style="margin: 15px">
@@ -176,6 +174,8 @@
 			</div>
 		</footer>
 
+		<script src="jquery-2.2.1.min.js"></script>
+		<script src="nitroxy.js"></script>
 		<script defer src="//releases.flowplayer.org/6.0.5/flowplayer.min.js"></script>
 		<script src="bootstrap.min.js"></script>
 		<script src="bootstrap-switch.min.js"></script>
