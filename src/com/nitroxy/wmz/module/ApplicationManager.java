@@ -285,6 +285,11 @@ public class ApplicationManager {
 
 	@Exposed(method="POST", url="recording")
 	public void toggleRecording(boolean state){
+		/* idempotence */
+		if (this.config.settings.StreamSwitcher_autoRecord == state) {
+			return;
+		}
+
 		config.settings.StreamSwitcher_autoRecord = state;
 		config.save();
 		
