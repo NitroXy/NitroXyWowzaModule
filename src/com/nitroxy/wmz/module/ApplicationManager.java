@@ -32,35 +32,35 @@ public class ApplicationManager {
 		this.appInstance = appInstance;
 		this.main = main;
 		this.vhost = appInstance.getVHost();
-		
+
 		loadRouting();
-		
+
 		config = Config.getConfig(appInstance.getApplication().getName(), main);
 		if(config.exists()) {
 			if(config.settings.StreamSwitcher_Enabled) {
 				streamSwitcher = new StreamSwitcher(main, appInstance, config);
 			}
-			
+
 			if ( config.settings.StreamSwitcher_autoRecord ) {
 				startRecording();
 			}
 		}
 	}
-	
+
 	protected void loadRouting(){
 		for (Method method : this.getClass().getMethods()) {
 			final Exposed exposed = method.getAnnotation(Exposed.class);
 			if ( exposed == null) continue;
-			
+
 			final String url = exposed.url().isEmpty() ? method.getName() : exposed.url();
 			final String entry = exposed.method() + ":/" + url;
-			
+
 			if (routing.put(entry, method) != null) {
 				main.error("Duplicate route " + entry + " in class " + this.getClass().getName());
 			}
 		}
 	}
-	
+
 	public Object routeRequest(String http_method, String url, Map<String,String> args) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException{
 		/* find matching method */
 		final String entry = http_method + ":" + url;
@@ -68,7 +68,7 @@ public class ApplicationManager {
 		if ( method == null ){
 			throw new IllegalAccessException("No such route exposed");
 		}
-		
+
 		/* map named arguments to positional */
 		Parameter parameters[] = method.getParameters();
 		Object mapped_args[] = new Object[parameters.length];
@@ -79,7 +79,7 @@ public class ApplicationManager {
 			}
 			mapped_args[i] = args.get(argname);
 		}
-		
+
 		/* invoke method with arguments */
 		return method.invoke(this, mapped_args);
 	}
@@ -236,7 +236,7 @@ public class ApplicationManager {
 	@Exposed(method="GET", url="status")
 	public Map<String,Object> fullStatus(){
 		Map<String,Object> status = new Hashtable<String,Object>();
-		
+
 		if ( !(config.exists() && config.settings.StreamSwitcher_Enabled) ){
 			status.put("enabled", false);
 			return status;
@@ -299,7 +299,7 @@ public class ApplicationManager {
 
 		config.settings.StreamSwitcher_autoRecord = state;
 		config.save();
-		
+
 		if ( state ){
 			startRecording();
 		} else {
