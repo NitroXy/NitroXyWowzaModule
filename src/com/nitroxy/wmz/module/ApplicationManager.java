@@ -287,6 +287,12 @@ public class ApplicationManager {
 	public void toggleRecording(boolean state){
 		config.settings.StreamSwitcher_autoRecord = state;
 		config.save();
+		
+		if ( state ){
+			startRecording();
+		} else {
+			stopRecording();
+		}
 	}
 
 	@Exposed(method="POST", url="recording/segment")
