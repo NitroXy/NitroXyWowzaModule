@@ -96,8 +96,11 @@ returns:
   "live_target": STREAM,
   "preview_target", STREAM,
   "fallback_target", STREAM,
-  "is_published", BOOLEAN
-  "recording": [STREAM...]
+  "is_published", BOOLEAN,
+  "segment": {
+    "started_at": TIMESTAMP,
+    "duration": SECONDS
+  }
 }
 ```
 

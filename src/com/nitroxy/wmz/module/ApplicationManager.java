@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -12,7 +13,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.wowza.wms.application.IApplicationInstance;
-import com.wowza.wms.livestreamrecord.manager.IStreamRecorder;
 import com.wowza.wms.livestreamrecord.manager.IStreamRecorderConstants;
 import com.wowza.wms.livestreamrecord.manager.StreamRecorderParameters;
 import com.wowza.wms.livestreamrecord.manager.StreamRecorderSimpleFileVersionDelegate;
@@ -26,6 +26,7 @@ public class ApplicationManager {
 	private IApplicationInstance appInstance;
 	private IVHost vhost;
 	private Map<String,Method> routing = new HashMap<String, Method>();
+	private Date recordStart = null;
 
 	public ApplicationManager(NitroXyModule main, IApplicationInstance appInstance) {
 		this.appInstance = appInstance;
@@ -99,11 +100,13 @@ public class ApplicationManager {
 		record.segmentationType = IStreamRecorderConstants.SEGMENT_NONE;
 		record.fileVersionDelegate = new StreamRecorderSimpleFileVersionDelegate();
 		vhost.getLiveStreamRecordManager().startRecording(appInstance, record);
+		this.recordStart = new Date();
 	}
 
 	protected void stopRecording(){
 		main.info("Stopping stream recorder");
 		vhost.getLiveStreamRecordManager().stopRecording(appInstance);
+		this.recordStart = null;
 		main.info("Stream recorder stopped");
 	}
 
@@ -246,12 +249,16 @@ public class ApplicationManager {
 		status.put("fallback_target", currentFallback());
 		status.put("is_published", isPublished());
 
-		/* get all current recordings */
-		Map<String,String> recordings = new Hashtable<String,String>();
-		for ( IStreamRecorder recorder: vhost.getLiveStreamRecordManager().getRecordersList(appInstance) ){
-			recordings.put(recorder.getStreamName(), recorder.getCurrentFile());
+		if (this.config.settings.StreamSwitcher_autoRecord) {
+			final Map<String, Object> segment = new Hashtable<String, Object>();
+			final Date now = new Date();
+			final long duration = (now.getTime() - this.recordStart.getTime()) / 1000;
+			segment.put("started_at", this.recordStart.getTime() / 1000);
+			segment.put("duration", duration);
+			status.put("segment", segment);
+		} else {
+			status.put("segment", null);
 		}
-		status.put("recording", recordings);
 
 		return status;
 	}
@@ -307,6 +314,7 @@ public class ApplicationManager {
 		}
 		main.info("Segmenting live stream recording - " + currentLive());
 		vhost.getLiveStreamRecordManager().splitRecording(appInstance, currentLive());
+		this.recordStart = new Date();
 		return true;
 	}
 }
