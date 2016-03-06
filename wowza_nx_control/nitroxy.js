@@ -1,6 +1,7 @@
 (function(){
 	'use strict';
 
+	var switch_hack = false;                /* hack to prevent programmatic updates from triggering change callback */
 	var error_count = 0;
 	var update_timer;
 	var error_timer;
@@ -107,12 +108,17 @@
 	function updateStreamInfo(){
 		isUpdating = true;
 		api.fullStatus().done(function(data){
-			$("#live_data").html("Current stream: " + data.live_target);
-			$("#preview_data").html("Current stream: " + data.preview_target);
-			$("#fallback-stream .current").html("Current fallback: " + data.fallback_target);
-			$('.published').toggle(data.is_published);
-			$('input#external-publish').bootstrapSwitch('state', data.is_published);
-			$('input#auto-recording').bootstrapSwitch('state', data.auto_recording);
+			switch_hack = true; /* prevent change callbacks from firing */
+			try {
+				$("#live_data").html("Current stream: " + data.live_target);
+				$("#preview_data").html("Current stream: " + data.preview_target);
+				$("#fallback-stream .current").html("Current fallback: " + data.fallback_target);
+				$('.published').toggle(data.is_published);
+				$('input#external-publish').bootstrapSwitch('state', data.is_published);
+				$('input#auto-recording').bootstrapSwitch('state', data.auto_recording);
+			} finally {
+				switch_hack = false;
+			}
 		}).always(function(){
 			isUpdating = false;
 		});
@@ -301,11 +307,13 @@
 		});
 
 		$('input#external-publish').change(function(){
+			if ( switch_hack ) return;
 			var on = $(this).prop('checked');
 			api.publishExternal({state: on});
 		});
 
 		$('input#auto-recording').change(function(){
+			if ( switch_hack ) return;
 			var on = $(this).prop('checked');
 			api.recording.toggle({state: on});
 		});
