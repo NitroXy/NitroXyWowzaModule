@@ -302,6 +302,9 @@ public class ApplicationManager {
 
 	@Exposed(method="POST", url="recording/segment")
 	public boolean segment(){
+		if (!config.settings.StreamSwitcher_autoRecord) {
+			throw new RuntimeException("Cannot segment recording when recording is inactive");
+		}
 		main.info("Segmenting live stream recording - " + currentLive());
 		vhost.getLiveStreamRecordManager().splitRecording(appInstance, currentLive());
 		return true;
