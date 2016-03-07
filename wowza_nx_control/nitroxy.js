@@ -142,6 +142,8 @@
 			} finally {
 				switch_hack = false;
 			}
+
+			$('body').toggleClass('stream-recording', data.auto_recording);
 		}).always(function(){
 			isUpdating = false;
 		});

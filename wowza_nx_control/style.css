@@ -1,3 +1,11 @@
+.visible-recording {
+	display: none;
+}
+
+body.stream-recording .visible-recording {
+	display: block;
+}
+
 @media (min-width: 768px){
 	.vertical-align {
 		display: flex;
