@@ -91,7 +91,7 @@ public class StreamSwitcher {
 			publisher.setSendFCPublish(true);
 			publisher.setSendOnMetadata(false);
 			publisher.setOnMetadataToSetDataFrame(true);
-			publisher.setDebugLog(true);
+			publisher.setDebugLog(false);
 			publisher.setImplementation(config.settings.pushPublish_Profile);
 
 			publisher.connect();
