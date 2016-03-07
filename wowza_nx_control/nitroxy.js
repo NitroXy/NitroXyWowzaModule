@@ -7,6 +7,7 @@
 	var error_timer;
 	var update_interval = 10 * 1000;
 	var error_interval = 60 * 1000;
+	var segment_timer_element;
 
 	/**
 	 * Make async RPC call to the backend control. It returns a jQuery Deferred
@@ -104,6 +105,27 @@
 		segment: wrapCall('recording/segment', {update: false, error: true}),
 	};
 
+
+	function zeropad(s, n){
+		s = '' + s;
+		while ( s.length < n ){
+			s = '0' + s;
+		}
+		return s;
+	}
+
+	function hhmmss(seconds){
+		var h = Math.floor(seconds / 3600);
+		var m = Math.floor(seconds / 60) % 60;
+		return zeropad(h, 2) + ':' + zeropad(m, 2);
+	}
+
+	function update_segment_duration(duration){
+    if ( typeof(duration) === 'undefined' ) return;
+		if ( typeof(segment_timer_element) === 'undefined' || segment_timer_element.length === 0 ) return;
+		segment_timer_element.html(hhmmss(duration));
+	}
+
 	var isUpdating = false;
 	function updateStreamInfo(){
 		isUpdating = true;
@@ -116,6 +138,7 @@
 				$('.published').toggle(data.is_published);
 				$('input#external-publish').bootstrapSwitch('state', data.is_published);
 				$('input#auto-recording').bootstrapSwitch('state', data.auto_recording);
+			  update_segment_duration(data.segment ? data.segment.duration : undefined);
 			} finally {
 				switch_hack = false;
 			}
@@ -242,6 +265,8 @@
 				clearInterval(error_timer);
 			}
 		}, error_interval);
+
+		segment_timer_element = $('#segment-timer');
 
 		$('form#preview-stream-list').submit(function(e){
 			e.preventDefault();
