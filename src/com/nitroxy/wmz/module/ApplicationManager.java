@@ -90,7 +90,6 @@ public class ApplicationManager {
 			streamSwitcher.close();
 		}
 
-		stopRecording();
 		main.info("ApplicationManager stoppped");
 	}
 
