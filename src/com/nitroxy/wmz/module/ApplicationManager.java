@@ -256,8 +256,6 @@ public class ApplicationManager {
 			segment.put("started_at", this.recordStart.getTime() / 1000);
 			segment.put("duration", duration);
 			status.put("segment", segment);
-		} else {
-			status.put("segment", null);
 		}
 
 		return status;
