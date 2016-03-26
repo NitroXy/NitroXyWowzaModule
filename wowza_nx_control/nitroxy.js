@@ -369,6 +369,10 @@
 			});
 		}
 
+		if ( typeof(window.flowplayer) == 'undefined' ){
+			console.error('flowplayer.js was not loaded (check permissions, e.g. noscript)');
+		}
+
 		$(".player").flowplayer();
 	});
 })();
