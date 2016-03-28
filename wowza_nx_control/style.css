@@ -88,19 +88,19 @@ body.stream-recording .visible-recording {
 	visibility: hidden;
 }
 
-.panel.live-control a.btn-block {
+.panel.foldable-panel a.btn-block {
 	text-decoration: none;
 }
 
-.panel.live-control a > .fa {
+.panel.foldable-panel a > .fa {
 	padding-top: 2px;
 }
 
-.panel.live-control a > .fa:before {
+.panel.foldable-panel a > .fa:before {
 	content: "\f00d";
 }
 
-.panel.live-control a.collapsed > .fa:before {
+.panel.foldable-panel a.collapsed > .fa:before {
 	content: "\f078";
 }
 

@@ -90,7 +90,7 @@
 				<div class="col-md-1 hidden-xs hidden-sm"></div>
 				<div class="col-md-5">
 					<h4>Actions</h4>
-					<div class="panel panel-default live-control">
+					<div class="panel panel-default foldable-panel">
 						<div class="panel-heading">
 							<a class="btn-block collapsed" role="button" data-toggle="collapse" href="#live-controls" aria-expanded="false" aria-controls="live-controls">
 								Live stream controls.
@@ -114,26 +114,33 @@
 						</div>
 					</div>
 
-					<div class="visible-recording">
-						<h4>Segmentation</h4>
-						<p>Split ongoing recording into a new file. Preferably this should be done before each match or some other activity.</p>
 
-						<form class="form-group">
-							<button type="button" id="segment-current" class="btn btn-primary" title="Segment the stream which is currently live"><span class="fa fa-eject"></span> Segment live</button>
-						</form>
+					<div class="panel panel-default foldable-panel visible-recording">
+						<div class="panel-heading">
+							<a class="btn-block collapsed" role="button" data-toggle="collapse" href="#segmentation-controls" aria-expanded="false" aria-controls="segmentation-controls">
+								Segmentation
+								<span class="fa pull-right"></span>
+							</a>
+						</div>
+						<div class="panel-body collapse" id="segmentation-controls">
+							<p>Split ongoing recording into a new file. Preferably this should be done before each match or some other activity.</p>
+							<form class="form-group">
+								<button type="button" id="segment-current" class="btn btn-primary" title="Segment the stream which is currently live"><span class="fa fa-eject"></span> Segment live</button>
+							</form>
 
-						<form class="form-group" id="segment-stream">
-							<label class="control-label">Segment stream</label>
-							<div class="input-group">
-								<span class="input-group-btn">
-									<button class="btn btn-default" type="button" data-action="refresh-streams" title="Refresh stream list"><span class="fa fa-refresh"></span></button>
-								</span>
-								<select class="form-control stream-list" data-filter="stream"></select>
-								<span class="input-group-btn">
-									<button class="btn btn-default" type="submit" title="Segment selected"><span class="fa fa-eject"></span></button>
-								</span>
-							</div>
-						</form>
+							<form class="form-group" id="segment-stream">
+								<label class="control-label">Segment stream</label>
+								<div class="input-group">
+									<span class="input-group-btn">
+										<button class="btn btn-default" type="button" data-action="refresh-streams" title="Refresh stream list"><span class="fa fa-refresh"></span></button>
+									</span>
+									<select class="form-control stream-list" data-filter="stream"></select>
+									<span class="input-group-btn">
+										<button class="btn btn-default" type="submit" title="Segment selected"><span class="fa fa-eject"></span></button>
+									</span>
+								</div>
+							</form>
+						</div>
 					</div>
 				</div>
 			</div>
