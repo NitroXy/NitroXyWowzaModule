@@ -15,7 +15,6 @@ import java.util.regex.Pattern;
 import com.wowza.wms.application.IApplicationInstance;
 import com.wowza.wms.livestreamrecord.manager.IStreamRecorderConstants;
 import com.wowza.wms.livestreamrecord.manager.StreamRecorderParameters;
-import com.wowza.wms.livestreamrecord.manager.StreamRecorderSimpleFileVersionDelegate;
 import com.wowza.wms.stream.IMediaStream;
 import com.wowza.wms.vhost.IVHost;
 
@@ -97,7 +96,7 @@ public class ApplicationManager {
 		main.info("Starting stream recorder");
 		StreamRecorderParameters record = new StreamRecorderParameters(this.appInstance);
 		record.segmentationType = IStreamRecorderConstants.SEGMENT_NONE;
-		record.fileVersionDelegate = new StreamRecorderSimpleFileVersionDelegate();
+		record.fileVersionDelegate = new StreamRecorderFile();
 		vhost.getLiveStreamRecordManager().startRecording(appInstance, record);
 		this.recordStart = new Date();
 	}
