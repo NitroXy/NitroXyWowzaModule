@@ -86,8 +86,27 @@
 							</span>
 						</div>
 					</form>
+
+					<h4>Fallback stream</h4>
+					<p>The fallback stream is played when the regular stream is finished or down.</p>
+
+					<form class="form-group fallback-stream" id="fallback-stream">
+						<label class="control-label">Available streams</label>
+						<div class="input-group">
+							<span class="input-group-btn">
+								<button class="btn btn-default" type="button" data-action="refresh-streams" title="Refresh stream list"><span class="fa fa-refresh"></span></button>
+							</span>
+							<select class="form-control stream-list"></select>
+							<span class="input-group-btn">
+								<button class="btn btn-default" type="submit" title="Change to selected"><span class="fa fa-play-circle"></span></button>
+							</span>
+						</div>
+						<span class="help-block current"></span>
+					</form>
 				</div>
+
 				<div class="col-md-1 hidden-xs hidden-sm"></div>
+
 				<div class="col-md-5">
 					<h4>Actions</h4>
 					<div class="panel panel-default foldable-panel">
@@ -113,7 +132,6 @@
 							<input type="checkbox" data-switch id="auto-recording" />
 						</div>
 					</div>
-
 
 					<div class="panel panel-default foldable-panel visible-recording">
 						<div class="panel-heading">
@@ -142,27 +160,6 @@
 							</form>
 						</div>
 					</div>
-				</div>
-			</div>
-
-			<div class="row">
-				<div class="col-md-5">
-					<h4>Fallback stream</h4>
-					<p>The fallback stream is played when the regular stream is finished or down.</p>
-
-					<form class="form-group fallback-stream" id="fallback-stream">
-						<label class="control-label">Available streams</label>
-						<div class="input-group">
-							<span class="input-group-btn">
-								<button class="btn btn-default" type="button" data-action="refresh-streams" title="Refresh stream list"><span class="fa fa-refresh"></span></button>
-							</span>
-							<select class="form-control stream-list"></select>
-							<span class="input-group-btn">
-								<button class="btn btn-default" type="submit" title="Change to selected"><span class="fa fa-play-circle"></span></button>
-							</span>
-						</div>
-						<span class="help-block current"></span>
-					</form>
 				</div>
 			</div>
 		</div>
